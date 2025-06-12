@@ -25,10 +25,10 @@ public class UserModel {
     public String avatar; // varchar(255)
 
     @Column(name = "display_name")
-    public String display_name; // varchar(255)
+    public String displayName; // varchar(255)
 
     @Column(name = "is_admin")
-    public Boolean is_admin; // boolean
+    public Boolean isAdmin; // boolean
 
     @Column(name = "login")
     public String login; // varchar(255)
