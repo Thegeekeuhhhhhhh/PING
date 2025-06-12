@@ -8,33 +8,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserModel {
-    
+
     @Column(name = "avatar")
-    String avatar; // varchar(255)
+    public String avatar; // varchar(255)
 
     @Column(name = "display_name")
-    String display_name; // varchar(255)
+    public String display_name; // varchar(255)
 
     @Column(name = "is_admin")
-    boolean is_admin; // boolean
+    public Boolean is_admin; // boolean
 
     @Column(name = "login")
-    String login; // varchar(255)
+    public String login; // varchar(255)
 
     @Column(name = "password")
-    String password; // varchar(255)
+    public String password; // varchar(255)
 
     @Id
-    @Column(name = "id") @GeneratedValue(strategy = GenerationType.IDENTITY)
-    UUID id;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
 
-    
 }
