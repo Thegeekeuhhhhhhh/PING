@@ -8,28 +8,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "projects")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectModel {
 
     @Column(name = "name")
-    String name; // varchar(255)
-
+    public String name; // varchar(255)
 
     @Column(name = "path")
-    String path; // varchar(255)
-
+    public String path; // varchar(255)
 
     @Column(name = "owner_id")
-    UserModel owner_id; // uuid (Foreign key)
+    public Integer owner_id; // uuid (Foreign key)
 
     @Id
-    @Column(name = "id") @GeneratedValue(strategy = GenerationType.IDENTITY)
-    UUID id;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
 
 }
