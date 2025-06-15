@@ -13,11 +13,32 @@ public class UserService {
     @Inject
     UserRepository userRepository;
 
-    public Boolean add_User(String avatar, String displayName, Boolean isAdmin, String login, String password){
-        return true;
+    public UserModel add_User(String avatar, String displayName, Boolean isAdmin, String login, String password) {
+        return userRepository.add_User_in_Database(avatar, displayName, isAdmin, login, password);
     }
 
-    //public List<UserModel> add_User(String avatar, String displayName, Boolean isAdmin, String login, String password){
-    //    return true;
-    //}
+    public UserModel checkUser(String login, String password) {
+        return userRepository.checkLogin(login, password);
+    }
+
+    public UserModel updateUser(Long id, String displayName, String avatar, String password) {
+        return userRepository.updateUser(id, displayName, password, avatar);
+    }
+
+    public UserModel GetUser(Long id) {
+        return userRepository.GetUser(id);
+    }
+
+    public boolean DeleteUser(Long id) {
+        return userRepository.DeleteUser(id);
+    }
+
+    public List<UserModel> listUsers() {
+        return userRepository.listUsers();
+    }
+
+    // public List<UserModel> add_User(String avatar, String displayName, Boolean
+    // isAdmin, String login, String password){
+    // return true;
+    // }
 }
