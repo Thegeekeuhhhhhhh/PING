@@ -1,6 +1,4 @@
-package fr.epita.assistants.ping.common.api.response;
-
-import java.util.UUID;
+package fr.epita.assistants.ping.common.api.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserResponse {
-    public Integer id;
-    public String login;
+public class UpdateRequest {
+    public String password;
     public String displayName;
-    public Boolean isAdmin;
     public String avatar;
 }
