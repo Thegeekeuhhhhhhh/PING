@@ -4,12 +4,18 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.common.api.request.UserRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
+import jakarta.inject.Inject;
 
 @Path("/api")
 public class UserResource {
+
+    @Inject
+    UserService userService;
+
     @POST
     @Path("/user")
     @Produces(MediaType.TEXT_PLAIN)
@@ -45,6 +51,7 @@ public class UserResource {
 
         // TODO
         // Envoyer le user a la database
+        
         // Si ca existe deja -> 409
 
         first = first.substring(0, 1).toUpperCase() + first.substring(1);
