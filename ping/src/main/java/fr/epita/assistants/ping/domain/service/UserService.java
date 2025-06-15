@@ -17,7 +17,7 @@ public class UserService {
         return true;
     }
 
-    public List<UserModel> add_User(String avatar, String displayName, Boolean isAdmin, String login, String password){
-        return true;
-    }
+    //public List<UserModel> add_User(String avatar, String displayName, Boolean isAdmin, String login, String password){
+    //    return true;
+    //}
 }
