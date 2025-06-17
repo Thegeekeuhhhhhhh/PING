@@ -27,7 +27,7 @@ public class ProjectModel {
     @Column(name = "path")
     public String path; // varchar(255)
 
-    @Column(name = "owner_id")
+    @Column(name = "ownerId")
     public Integer owner_id; // uuid (Foreign key)
 
     @Id
