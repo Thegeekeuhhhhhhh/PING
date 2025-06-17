@@ -27,12 +27,12 @@ public class ProjectModel {
     @Column(name = "path")
     public String path; // varchar(255)
 
-    @Column(name = "ownerId")
-    public Integer owner_id; // uuid (Foreign key)
+    @Column(name = "owner_id")
+    public UUID ownerId; // uuid (Foreign key)
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public UUID id;
 
 }
