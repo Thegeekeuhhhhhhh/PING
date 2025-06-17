@@ -9,9 +9,9 @@ import fr.epita.assistants.ping.common.api.request.UserRequest;
 import fr.epita.assistants.ping.common.api.request.LoginRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.common.api.request.UpdateRequest;
-import fr.epita.assistants.ping.common.api.response.JWTResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.common.api.response.LoginResponse;
+import fr.epita.assistants.ping.common.api.response.SimpleMessageResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.Authenticated;
 import io.smallrye.jwt.build.Jwt;
@@ -32,10 +32,41 @@ public class UserResource {
     @Inject
     UserService userService;
 
+    @GET
+    @Path("/user/createadmin")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createFirstAdmin() {
+        String log = "admin";
+        String pwd = "admin";
+        var a = userService.checkUser(log, pwd);
+        if (a == null) {
+            userService.add_User("prout", "admin", true, "admin", "admin");
+            return Response.ok(new SimpleMessageResponse("KENAN C EST VRAIMENT PAS BIEN")).status(200).build();
+        }
+
+        JsonObject jwtData = new JsonObject();
+        jwtData.put("sub", a.id);
+        if (a.isAdmin) {
+            jwtData.put("groups", "admin");
+        } else {
+            jwtData.put("groups", "user");
+        }
+
+        jwtData.put("iat", Date.from(Instant.now()));
+        jwtData.put("exp", Date.from(Instant.ofEpochSecond(10000)));
+
+        String tk = Jwt.encrypt(jwtData.toString());
+
+        System.out.println(tk);
+
+        return Response.ok(new LoginResponse(tk)).build();
+
+    }
+
     @POST
     @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
-    // @RolesAllowed("ROLE_ADMIN")
+    // @RolesAllowed("admin")
     @Authenticated
     public Response user(UserRequest userRequest) {
         System.out.println(userRequest.login);
@@ -98,8 +129,7 @@ public class UserResource {
     @Path("/user/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
-
-        if (loginRequest.login == null || loginRequest.password == null) {
+        if (loginRequest == null || loginRequest.login == null || loginRequest.password == null) {
             return Response.ok(new ErrorInfo("LEO VRAIMENT TU FAIT CA")).status(400).build();
         }
         var a = userService.checkUser(loginRequest.login, loginRequest.password);
