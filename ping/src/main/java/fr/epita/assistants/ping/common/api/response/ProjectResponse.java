@@ -1,6 +1,6 @@
 package fr.epita.assistants.ping.common.api.response;
 
-import java.util.UUID;
+import java.util.ArrayList;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserResponse {
-    public Long id;
-    public String login;
-    public String displayName;
-    public Boolean isAdmin;
-    public String avatar;
+public class ProjectResponse {
+    public String name;
+    public ArrayList<MemberResponse> members;
+    public MemberResponse owner;
 }

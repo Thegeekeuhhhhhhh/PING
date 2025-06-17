@@ -4,7 +4,6 @@ import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.data.model.UserModel;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import java.util.List;
 
 @ApplicationScoped
