@@ -24,10 +24,10 @@ public class UserModel {
     @Column(name = "avatar")
     public String avatar; // varchar(255)
 
-    @Column(name = "display_name")
+    @Column(name = "displayName")
     public String displayName; // varchar(255)
 
-    @Column(name = "is_admin")
+    @Column(name = "isAdmin")
     public Boolean isAdmin; // boolean
 
     @Column(name = "login")
