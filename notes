@@ -1,0 +1,8 @@
+Pour leo le roi des idiots qui retient pas les commandes:
+psql -U postgres -d ping -> Faire des commandes dans la db ping
+\dt -> Afficher toutes les tables
+
+openssl genrsa -out rsaPrivateKey.pem 2048
+openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
+
+openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
