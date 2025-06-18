@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserResponse {
-    public Long id;
+    public UUID id;
     public String login;
     public String displayName;
     public Boolean isAdmin;
