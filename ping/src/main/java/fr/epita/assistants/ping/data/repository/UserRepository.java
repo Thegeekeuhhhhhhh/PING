@@ -29,14 +29,19 @@ public class UserRepository implements PanacheRepository<UserModel> {
 
     @Transactional
     public UserModel checkLogin(String login, String password) {
-        var a = find("login", login);
-        if (a.count() == 0) {
-            return null;
+        System.out.println("Start");
+        List<UserModel> temp = listAll();
+        System.out.println("Le plus dur est fait");
+        for (UserModel u : temp) {
+            if (u.login.equals(login)) {
+                if (u.password.equals(password)) {
+                    return u;
+                }
+                System.out.println("Dommage");
+            }
         }
-        if (!a.firstResult().password.equals(password)) {
-            return null;
-        }
-        return a.firstResult();
+
+        return null;
     }
 
     @Transactional
