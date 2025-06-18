@@ -15,16 +15,19 @@ import fr.epita.assistants.ping.common.api.response.SimpleMessageResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.Authenticated;
 import io.smallrye.jwt.build.Jwt;
+import io.smallrye.jwt.build.JwtClaimsBuilder;
 import io.smallrye.jwt.build.JwtSignature;
 import io.vertx.core.json.JsonObject;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 @Path("/api")
 public class UserResource {
@@ -32,34 +35,34 @@ public class UserResource {
     @Inject
     UserService userService;
 
+    @Inject
+    JsonWebToken jwt;
+
     @GET
     @Path("/user/createadmin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createFirstAdmin() {
+        System.out.println("JE VIENS D ARRIVER LA TEAM");
+
         String log = "admin";
         String pwd = "admin";
+        System.out.println("Ici");
         var a = userService.checkUser(log, pwd);
+        System.out.println("J'ai check user");
         if (a == null) {
-            userService.add_User("prout", "admin", true, "admin", "admin");
-            return Response.ok(new SimpleMessageResponse("KENAN C EST VRAIMENT PAS BIEN")).status(200).build();
+            UserModel u = userService.add_User("prout", "admin", true, "admin", "admin");
+            String tk = Jwt.claims()
+                    .issuer("ProutMan roi des cramptes")
+                    .upn("Caca man")
+                    .subject(u.id.toString())
+                    .groups("admin")
+                    .issuedAt(Instant.now())
+                    .expiresAt(Instant.now().plus(10000, ChronoUnit.SECONDS))
+                    .sign();
+            return Response.ok(new LoginResponse(tk)).status(200).build();
         }
 
-        JsonObject jwtData = new JsonObject();
-        jwtData.put("sub", a.id);
-        if (a.isAdmin) {
-            jwtData.put("groups", "admin");
-        } else {
-            jwtData.put("groups", "user");
-        }
-
-        jwtData.put("iat", Date.from(Instant.now()));
-        jwtData.put("exp", Date.from(Instant.ofEpochSecond(10000)));
-
-        String tk = Jwt.encrypt(jwtData.toString());
-
-        System.out.println(tk);
-
-        return Response.ok(new LoginResponse(tk)).build();
+        return Response.ok(new SimpleMessageResponse("L ADMIN EXISTE DEJA")).status(200).build();
 
     }
 
@@ -129,6 +132,8 @@ public class UserResource {
     @Path("/user/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
+        System.out.println(jwt.toString());
+        System.out.println("J ARRIVE");
         if (loginRequest == null || loginRequest.login == null || loginRequest.password == null) {
             return Response.ok(new ErrorInfo("LEO VRAIMENT TU FAIT CA")).status(400).build();
         }
@@ -137,20 +142,27 @@ public class UserResource {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(401).build();
         }
 
-        JsonObject jwtData = new JsonObject();
-        jwtData.put("sub", a.id);
+        String tk;
+
         if (a.isAdmin) {
-            jwtData.put("groups", "admin");
+            tk = Jwt.claims()
+                    .issuer("ProutMan roi des cramptes")
+                    .subject(a.id.toString())
+                    .groups("admin")
+                    .issuedAt(Instant.now())
+                    .expiresAt(Instant.now().plus(10000, ChronoUnit.SECONDS))
+                    .sign();
         } else {
-            jwtData.put("groups", "user");
+            tk = Jwt.claims()
+                    .issuer("ProutMan roi des cramptes")
+                    .subject(a.id.toString())
+                    .groups("user")
+                    .issuedAt(Instant.now())
+                    .expiresAt(Instant.now().plus(10000, ChronoUnit.SECONDS))
+                    .sign();
         }
 
-        jwtData.put("iat", Date.from(Instant.now()));
-        jwtData.put("exp", Date.from(Instant.ofEpochSecond(10000)));
-
-        String tk = Jwt.encrypt(jwtData.toString());
-
-        System.out.println(tk);
+        System.out.println(tk.toString());
 
         return Response.ok(new LoginResponse(tk)).build();
 
@@ -202,14 +214,14 @@ public class UserResource {
     @Authenticated // 401
     public Response listUsers() {
         // 403 a gere
-        return Response.ok(userService.listUsers().stream().map(user -> {
-            var obj = new JsonObject();
-            obj.put("id", user.id);
-            obj.put("login", user.login);
-            obj.put("displayName", user.displayName);
-            obj.put("isAdmin", user.isAdmin);
-            obj.put("avatar", user.avatar);
-            return obj;
-        })).build();
+
+        List<UserModel> temp = userService.listUsers();
+        ArrayList<UserResponse> res = new ArrayList<UserResponse>();
+        for (UserModel u : temp) {
+            UserResponse x = new UserResponse(u.id, u.login, u.displayName, u.isAdmin, u.avatar);
+            res.add(x);
+        }
+
+        return Response.ok(res).status(200).build();
     }
 }
