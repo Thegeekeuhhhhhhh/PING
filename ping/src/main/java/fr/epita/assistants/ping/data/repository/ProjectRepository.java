@@ -14,12 +14,23 @@ import java.util.UUID;
 public class ProjectRepository implements PanacheRepository<ProjectModel> {
 
     @Transactional
-    public List<ProjectModel> GetProjects() {
+    public List<ProjectModel> getProjects() {
         return listAll();
     }
 
     @Transactional
-    public List<ProjectModel> GetUserProjects(UUID id) {
+    public ProjectModel getProject(UUID id) {
+        List<ProjectModel> temp = listAll();
+        for (ProjectModel p : temp) {
+            if (p.id.equals(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    @Transactional
+    public List<ProjectModel> getUserProjects(UUID id) {
         ArrayList<ProjectModel> prout = new ArrayList<ProjectModel>();
         for (ProjectModel um : listAll()) {
             for (UserModel caca : um.members) {
@@ -30,22 +41,47 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     }
 
     @Transactional
-    public ProjectModel getProject(UUID id) {
-        for (ProjectModel um : listAll()) {
-            if (um.id.equals(id)) {
-                return um;
-            }
-        }
-        return null;
-    }
-
-    @Transactional
-    public ProjectModel AddProject(String name, UserModel owner) {
+    public ProjectModel addProject(String name, UserModel owner) {
         ProjectModel pm = new ProjectModel();
         pm.members = new ArrayList<UserModel>(List.of(owner));
         pm.owner = owner;
         pm.name = name;
         persist(pm);
         return pm;
+    }
+
+    @Transactional
+    public ProjectModel updateProject(String name, UUID oldId, UUID newId) {
+        ProjectModel p = getProject(oldId);
+        if (p == null) {
+            return null;
+        }
+
+        // Check si le nouveau proprio fait partie des membres
+        Boolean ok = false;
+        for (UserModel x : p.members) {
+            if (x.id.equals(newId)) {
+                ok = true;
+                break;
+            }
+        }
+        if (!ok) {
+            return null;
+        }
+
+        if (name.length() > 0) {
+            p.name = name;
+        }
+        if (newId != null) {
+            p.id = newId;
+        }
+        return p;
+    }
+
+    @Transactional
+    public void deleteProject(UUID id) {
+        if (getProject(id) != null) {
+            delete(getProject(id));
+        }
     }
 }

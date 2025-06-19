@@ -56,9 +56,15 @@ public class UserRepository implements PanacheRepository<UserModel> {
         // MAXIME
         // LISTALL ->FIND A LA MAIN
 
-        user.password = password;
-        user.displayName = displayName;
-        user.avatar = avatar;
+        if (password.length() > 0) {
+            user.password = password;
+        }
+        if (displayName.length() > 0) {
+            user.displayName = displayName;
+        }
+        if (avatar.length() > 0) {
+            user.avatar = avatar;
+        }
         return user;
     }
 
@@ -79,7 +85,6 @@ public class UserRepository implements PanacheRepository<UserModel> {
             return true;
         }
         return false;
-
     }
 
     @Transactional
