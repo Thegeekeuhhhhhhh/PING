@@ -7,11 +7,13 @@ import fr.epita.assistants.ping.domain.service.ProjectService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.common.api.request.UserRequest;
 import fr.epita.assistants.ping.common.api.request.LoginRequest;
+import fr.epita.assistants.ping.common.api.request.ProjectRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.common.api.request.UpdateRequest;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.common.api.response.LoginResponse;
+import fr.epita.assistants.ping.common.api.response.MemberResponse;
 import fr.epita.assistants.ping.common.api.response.ProjectResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.Authenticated;
@@ -33,12 +35,31 @@ public class ProjectRessource {
     @Inject
     ProjectService projectService;
 
+    @Inject
+    JsonWebToken jwt;
+
     @GET
     @Path("/projects")
     @Produces(MediaType.APPLICATION_JSON)
     public Response projects() {
-        List<ProjectModel> list = projectService.GetProjects();
-        List<ProjectResponse> response;
-        return Response.ok(new ErrorInfo("caca")).status(401).build();
+        ArrayList<ProjectModel> list = new ArrayList<ProjectModel>(projectService.GetProjects());
+        ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
+        for (ProjectModel pm : list) {
+            ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
+            for (UserModel um : pm.members) {
+                mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
+            }
+            response.add(new ProjectResponse(pm.name, mr,
+                    new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
+        }
+        return Response.ok(response).status(200).build();
+    }
+
+    @POST
+    @Path("/projects")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createProjects(ProjectRequest request) {
+        String id = jwt.getSubject(); // TODO: Convertir en UUID
+        return Response.ok().status(200).build();
     }
 }
