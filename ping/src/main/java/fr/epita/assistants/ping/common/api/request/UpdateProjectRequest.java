@@ -1,5 +1,7 @@
 package fr.epita.assistants.ping.common.api.request;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProjectRequest {
+public class UpdateProjectRequest {
     public String name;
+    public UUID newOwnerId;
 }
