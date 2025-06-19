@@ -3,12 +3,13 @@ package fr.epita.assistants.ping.presentation.rest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
+import fr.epita.assistants.ping.domain.service.ProjectService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.common.api.request.UserRequest;
 import fr.epita.assistants.ping.common.api.request.LoginRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.common.api.request.UpdateRequest;
+import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.common.api.response.LoginResponse;
 import fr.epita.assistants.ping.common.api.response.RefreshResponse;
@@ -35,6 +36,9 @@ public class UserResource {
 
     @Inject
     UserService userService;
+
+    @Inject
+    ProjectService projectService;
 
     @Inject
     JsonWebToken jwt;
@@ -70,19 +74,10 @@ public class UserResource {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    // @RolesAllowed("admin")
-    @Authenticated
+    @RolesAllowed({ "admin" }) // 401 + 403
     public Response user(UserRequest userRequest) {
-        if (userRequest == null) {
+        if (userRequest == null || userRequest.login == null || userRequest.password == null) {
             return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(401).build();
-        }
-        // Je sais pas a quel moment renvoyer 401 ?
-        if (jwt.getGroups().size() == 0) {
-            return Response.ok(new ErrorInfo("Souci de jwt")).status(404).build();
-        }
-
-        if (!jwt.getGroups().contains("admin")) {
-            return Response.ok(new ErrorInfo("Only admin can create user brother")).status(403).build();
         }
 
         boolean legit = false;
@@ -128,17 +123,8 @@ public class UserResource {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated // 401
+    @RolesAllowed({ "admin" }) // 401 + 403
     public Response listUsers() {
-        // 403 a gere
-        if (jwt.getGroups().size() == 0) {
-            return Response.ok(new ErrorInfo("Souci de jwt")).status(404).build();
-        }
-
-        if (!jwt.getGroups().contains("admin")) {
-            return Response.ok(new ErrorInfo("Only admin can create user brother")).status(403).build();
-        }
-
         List<UserModel> temp = userService.listUsers();
         ArrayList<UserResponse> res = new ArrayList<UserResponse>();
         for (UserModel u : temp) {
@@ -192,7 +178,7 @@ public class UserResource {
     @GET
     @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated // 401
+    @RolesAllowed({ "admin", "user" }) // 401 + 403
     public Response refreshToken() {
         // 403 a gerer jsp comment differencier 403 et 404
 
@@ -224,22 +210,62 @@ public class UserResource {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated
-    public Response updateUser(@PathParam("id") UUID id, UpdateRequest UpdateRequest) {
-        UserModel user = userService.updateUser(id, UpdateRequest.displayName, UpdateRequest.avatar,
-                UpdateRequest.password);
-        // 403 a gere
+    @RolesAllowed({ "admin", "user" }) // 401 + 403.5
+    public Response updateUser(@PathParam("id") UUID id, UpdateRequest updateRequest) {
+        String grp = "";
+        for (String tmp : jwt.getGroups()) {
+            grp = tmp;
+            break;
+        }
+
+        if (grp.equals("user")) {
+            String idstr = jwt.getSubject();
+            UUID realId = UUID.fromString(idstr);
+            if (!realId.equals(id)) {
+                return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
+            }
+        }
+
+        String dpname = "";
+        String avatar = "";
+        String passwd = "";
+        if (updateRequest.displayName.length() > 0) {
+            dpname = updateRequest.displayName;
+        }
+        if (updateRequest.avatar.length() > 0) {
+            avatar = updateRequest.avatar;
+        }
+        if (updateRequest.password.length() > 0) {
+            passwd = updateRequest.password;
+        }
+
+        UserModel user = userService.updateUser(id, dpname, avatar, passwd);
         if (user == null) {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }
-        return Response.ok(new UserResponse(user.id, user.login, user.displayName, user.isAdmin, user.avatar)).build();
+        return Response.ok(new UserResponse(user.id, user.login, user.displayName, user.isAdmin, user.avatar))
+                .status(200).build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated // 401
+    @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response GetUser(@PathParam("id") UUID id) {
+        String grp = "";
+        for (String tmp : jwt.getGroups()) {
+            grp = tmp;
+            break;
+        }
+
+        if (grp.equals("user")) {
+            String idstr = jwt.getSubject();
+            UUID realId = UUID.fromString(idstr);
+            if (!realId.equals(id)) {
+                return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
+            }
+        }
+
         UserModel user = userService.GetUser(id);
         // 403a gere
         if (user == null) {
@@ -251,10 +277,14 @@ public class UserResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated // 401
+    @RolesAllowed({ "admin" }) // 401 + 403
     public Response DeleteUser(@PathParam("id") UUID id) {
+        List<ProjectModel> list = projectService.GetUserProjects(id);
+        if (list.size() > 0) {
+            return Response.ok(new ErrorInfo("PAS LE DROIT DE DELETE")).status(403).build();
+        }
+
         Boolean bool = userService.DeleteUser(id);
-        // 403 a gere
         if (bool == false) {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }

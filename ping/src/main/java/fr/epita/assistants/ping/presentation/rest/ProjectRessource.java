@@ -43,6 +43,7 @@ public class ProjectRessource {
 
     @GET
     @Path("/projects")
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Response userProjects() {
         UUID id = UUID.fromString(jwt.getSubject());
