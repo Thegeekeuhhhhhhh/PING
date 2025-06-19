@@ -45,11 +45,17 @@ public class UserRepository implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public UserModel updateUser(Long id, String displayName, String password, String avatar) {
-        UserModel user = findById(id);
+    public UserModel updateUser(UUID id, String displayName, String password, String avatar) {
+        UserModel user = GetUser(id);
+        System.out.println("Test");
+        System.out.println(user.avatar);
         if (user == null) {
             return null;
         }
+
+        // MAXIME
+        // LISTALL ->FIND A LA MAIN
+
         user.password = password;
         user.displayName = displayName;
         user.avatar = avatar;
@@ -57,17 +63,23 @@ public class UserRepository implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public UserModel GetUser(Long id) {
-        UserModel user = findById(id);
-        if (user == null) {
-            return null;
+    public UserModel GetUser(UUID id) {
+        for (UserModel um : listAll()) {
+            if (um.id.equals(id)) {
+                return um;
+            }
         }
-        return user;
+        return null;
     }
 
     @Transactional
-    public boolean DeleteUser(Long id) {
-        return deleteById(id);
+    public boolean DeleteUser(UUID id) {
+        if (GetUser(id) != null) {
+            delete(GetUser(id));
+            return true;
+        }
+        return false;
+
     }
 
     @Transactional

@@ -36,13 +36,17 @@ public class ProjectRessource {
     ProjectService projectService;
 
     @Inject
+    UserService userService;
+
+    @Inject
     JsonWebToken jwt;
 
     @GET
     @Path("/projects")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response projects() {
-        ArrayList<ProjectModel> list = new ArrayList<ProjectModel>(projectService.GetProjects());
+    public Response userProjects() {
+        UUID id = UUID.fromString(jwt.getSubject());
+        ArrayList<ProjectModel> list = new ArrayList<ProjectModel>(projectService.GetUserProjects(id));
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
         for (ProjectModel pm : list) {
             ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
@@ -59,7 +63,36 @@ public class ProjectRessource {
     @Path("/projects")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
-        String id = jwt.getSubject(); // TODO: Convertir en UUID
-        return Response.ok().status(200).build();
+        UUID id = UUID.fromString(jwt.getSubject());
+        UserModel owner = userService.GetUser(id);
+
+        ProjectModel project = projectService.AddProject(request.getName(), owner);
+
+        ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
+
+        for (UserModel um : project.members) {
+            mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
+        }
+
+        return Response.ok(new ProjectResponse(project.name, mr,
+                new MemberResponse(project.owner.id, project.owner.displayName, project.owner.avatar))).status(200)
+                .build();
+    }
+
+    @GET
+    @Path("/projects/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allProjects() {
+        ArrayList<ProjectModel> list = new ArrayList<ProjectModel>(projectService.GetProjects());
+        ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
+        for (ProjectModel pm : list) {
+            ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
+            for (UserModel um : pm.members) {
+                mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
+            }
+            response.add(new ProjectResponse(pm.name, mr,
+                    new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
+        }
+        return Response.ok(response).status(200).build();
     }
 }

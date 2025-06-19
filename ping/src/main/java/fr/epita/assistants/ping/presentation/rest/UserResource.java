@@ -11,6 +11,7 @@ import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.common.api.request.UpdateRequest;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.common.api.response.LoginResponse;
+import fr.epita.assistants.ping.common.api.response.RefreshResponse;
 import fr.epita.assistants.ping.common.api.response.SimpleMessageResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.Authenticated;
@@ -29,7 +30,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 
-@Path("/api")
+@Path("/api/user")
 public class UserResource {
 
     @Inject
@@ -39,7 +40,7 @@ public class UserResource {
     JsonWebToken jwt;
 
     @GET
-    @Path("/user/createadmin")
+    @Path("/createadmin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createFirstAdmin() {
         System.out.println("JE VIENS D ARRIVER LA TEAM");
@@ -67,7 +68,7 @@ public class UserResource {
     }
 
     @POST
-    @Path("/user")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     // @RolesAllowed("admin")
     @Authenticated
@@ -125,15 +126,31 @@ public class UserResource {
     }
 
     @GET
-    @Path("/user/prout")
+    @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addAdmin() {
-        userService.add_User("", "admin", true, "admin", "admin");
-        return Response.ok().status(200).build();
+    @Authenticated // 401
+    public Response listUsers() {
+        // 403 a gere
+        if (jwt.getGroups().size() == 0) {
+            return Response.ok(new ErrorInfo("Souci de jwt")).status(404).build();
+        }
+
+        if (!jwt.getGroups().contains("admin")) {
+            return Response.ok(new ErrorInfo("Only admin can create user brother")).status(403).build();
+        }
+
+        List<UserModel> temp = userService.listUsers();
+        ArrayList<UserResponse> res = new ArrayList<UserResponse>();
+        for (UserModel u : temp) {
+            UserResponse x = new UserResponse(u.id, u.login, u.displayName, u.isAdmin, u.avatar);
+            res.add(x);
+        }
+
+        return Response.ok(res).status(200).build();
     }
 
     @POST
-    @Path("/user/login")
+    @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
         System.out.println(jwt.toString());
@@ -172,11 +189,43 @@ public class UserResource {
 
     }
 
+    @GET
+    @Path("/refresh")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Authenticated // 401
+    public Response refreshToken() {
+        // 403 a gerer jsp comment differencier 403 et 404
+
+        String grp = ""; // recup le groupe du jwt (horrible)
+        for (String s : jwt.getGroups()) {
+            grp = s;
+            break;
+        }
+
+        String id = jwt.getSubject();
+        UUID realId = UUID.fromString(id);
+        List<UserModel> list = userService.listUsers();
+        for (UserModel x : list) {
+            if (x.id.equals(realId)) {
+                String tk = Jwt.claims()
+                        .issuer("ProutMan roi des cramptes")
+                        .subject(x.id.toString())
+                        .groups(grp)
+                        .issuedAt(Instant.now())
+                        .expiresAt(Instant.now().plus(10000, ChronoUnit.SECONDS))
+                        .sign();
+                return Response.ok(new RefreshResponse(tk)).status(200)
+                        .build();
+            }
+        }
+        return Response.ok(new ErrorInfo("USER NOT FOUND ARRETE")).status(404).build();
+    }
+
     @PUT
-    @Path("/user/{id}")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
-    public Response updateUser(@PathParam("id") Long id, UpdateRequest UpdateRequest) {
+    public Response updateUser(@PathParam("id") UUID id, UpdateRequest UpdateRequest) {
         UserModel user = userService.updateUser(id, UpdateRequest.displayName, UpdateRequest.avatar,
                 UpdateRequest.password);
         // 403 a gere
@@ -187,10 +236,10 @@ public class UserResource {
     }
 
     @GET
-    @Path("/user/{id}")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated // 401
-    public Response GetUser(@PathParam("id") Long id) {
+    public Response GetUser(@PathParam("id") UUID id) {
         UserModel user = userService.GetUser(id);
         // 403a gere
         if (user == null) {
@@ -200,32 +249,15 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/user/{id}")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated // 401
-    public Response DeleteUser(@PathParam("id") Long id) {
+    public Response DeleteUser(@PathParam("id") UUID id) {
         Boolean bool = userService.DeleteUser(id);
         // 403 a gere
         if (bool == false) {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("user/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated // 401
-    public Response listUsers() {
-        // 403 a gere
-
-        List<UserModel> temp = userService.listUsers();
-        ArrayList<UserResponse> res = new ArrayList<UserResponse>();
-        for (UserModel u : temp) {
-            UserResponse x = new UserResponse(u.id, u.login, u.displayName, u.isAdmin, u.avatar);
-            res.add(x);
-        }
-
-        return Response.ok(res).status(200).build();
+        return Response.ok().status(204).build();
     }
 }

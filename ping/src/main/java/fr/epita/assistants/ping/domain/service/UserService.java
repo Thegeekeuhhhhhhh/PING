@@ -5,6 +5,7 @@ import fr.epita.assistants.ping.data.model.UserModel;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.UUID;
 
 @ApplicationScoped
 public class UserService {
@@ -20,15 +21,15 @@ public class UserService {
         return userRepository.checkLogin(login, password);
     }
 
-    public UserModel updateUser(Long id, String displayName, String avatar, String password) {
+    public UserModel updateUser(UUID id, String displayName, String avatar, String password) {
         return userRepository.updateUser(id, displayName, password, avatar);
     }
 
-    public UserModel GetUser(Long id) {
+    public UserModel GetUser(UUID id) {
         return userRepository.GetUser(id);
     }
 
-    public boolean DeleteUser(Long id) {
+    public boolean DeleteUser(UUID id) {
         return userRepository.DeleteUser(id);
     }
 
