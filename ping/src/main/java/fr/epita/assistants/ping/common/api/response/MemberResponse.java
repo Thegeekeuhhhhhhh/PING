@@ -14,5 +14,5 @@ import lombok.Setter;
 public class MemberResponse {
     public UUID id;
     public String name;
-    public Boolean avatar;
+    public String avatar;
 }

@@ -72,14 +72,18 @@ public class UserResource {
     // @RolesAllowed("admin")
     @Authenticated
     public Response user(UserRequest userRequest) {
-        System.out.println(userRequest.login);
         if (userRequest == null) {
             return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(401).build();
         }
         // Je sais pas a quel moment renvoyer 401 ?
-        if (!userRequest.isAdmin) {
-            return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(403).build();
+        if (jwt.getGroups().size() == 0) {
+            return Response.ok(new ErrorInfo("Souci de jwt")).status(404).build();
         }
+
+        if (!jwt.getGroups().contains("admin")) {
+            return Response.ok(new ErrorInfo("Only admin can create user brother")).status(403).build();
+        }
+
         boolean legit = false;
         String first = "";
         String last = "";
@@ -172,7 +176,7 @@ public class UserResource {
     @Path("/user/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
-    public Response updateUser(UpdateRequest UpdateRequest, Long id) {
+    public Response updateUser(@PathParam("id") Long id, UpdateRequest UpdateRequest) {
         UserModel user = userService.updateUser(id, UpdateRequest.displayName, UpdateRequest.avatar,
                 UpdateRequest.password);
         // 403 a gere
@@ -186,7 +190,7 @@ public class UserResource {
     @Path("/user/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated // 401
-    public Response GetUser(Long id) {
+    public Response GetUser(@PathParam("id") Long id) {
         UserModel user = userService.GetUser(id);
         // 403a gere
         if (user == null) {
@@ -199,7 +203,7 @@ public class UserResource {
     @Path("/user/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated // 401
-    public Response DeleteUser(Long id) {
+    public Response DeleteUser(@PathParam("id") Long id) {
         Boolean bool = userService.DeleteUser(id);
         // 403 a gere
         if (bool == false) {
