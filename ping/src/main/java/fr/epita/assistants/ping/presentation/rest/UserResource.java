@@ -226,17 +226,18 @@ public class UserResource {
             }
         }
 
-        String dpname = "";
-        String avatar = "";
-        String passwd = "";
-        if (updateRequest.displayName.length() > 0) {
-            dpname = updateRequest.displayName;
+        String dpname = updateRequest.displayName;
+        String avatar = updateRequest.avatar;
+        String passwd = updateRequest.password;
+
+        if (dpname == null) {
+            dpname = "";
         }
-        if (updateRequest.avatar.length() > 0) {
-            avatar = updateRequest.avatar;
+        if (avatar == null) {
+            avatar = "";
         }
-        if (updateRequest.password.length() > 0) {
-            passwd = updateRequest.password;
+        if (passwd == null) {
+            passwd = "";
         }
 
         UserModel user = userService.updateUser(id, dpname, avatar, passwd);
