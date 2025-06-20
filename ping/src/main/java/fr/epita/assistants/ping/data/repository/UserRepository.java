@@ -12,7 +12,7 @@ import java.util.UUID;
 public class UserRepository implements PanacheRepository<UserModel> {
 
     @Transactional
-    public UserModel add_User_in_Database(String avatar, String displayName, Boolean isAdmin, String login,
+    public UserModel addUserInDatabase(String avatar, String displayName, Boolean isAdmin, String login,
             String password) {
         if (find("login", login).count() > 0) {
             return null;
@@ -46,15 +46,10 @@ public class UserRepository implements PanacheRepository<UserModel> {
 
     @Transactional
     public UserModel updateUser(UUID id, String displayName, String password, String avatar) {
-        UserModel user = GetUser(id);
-        System.out.println("Test");
-        System.out.println(user.avatar);
+        UserModel user = getUser(id);
         if (user == null) {
             return null;
         }
-
-        // MAXIME
-        // LISTALL ->FIND A LA MAIN
 
         if (password.length() > 0) {
             user.password = password;
@@ -69,20 +64,23 @@ public class UserRepository implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public UserModel GetUser(UUID id) {
+    public UserModel getUser(UUID id) {
         for (UserModel um : listAll()) {
             if (um.id.equals(id)) {
-                return um;
+                return new UserModel(um.avatar, um.displayName, um.isAdmin, um.login, um.password, um.id);
             }
         }
         return null;
     }
 
     @Transactional
-    public boolean DeleteUser(UUID id) {
-        if (GetUser(id) != null) {
-            delete(GetUser(id));
-            return true;
+    public boolean deleteUser(UUID id) {
+        UserModel temp = getUser(id);
+        for (UserModel u : listAll()) {
+            if (u.id.equals(temp.id)) {
+                delete(u);
+                return true;
+            }
         }
         return false;
     }

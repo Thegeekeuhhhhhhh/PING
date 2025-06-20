@@ -34,16 +34,22 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         ArrayList<ProjectModel> prout = new ArrayList<ProjectModel>();
         for (ProjectModel um : listAll()) {
             for (UserModel caca : um.members) {
-                prout.add(um);
+                if (caca.id.equals(id)) {
+                    prout.add(um);
+                }
             }
         }
         return prout;
     }
 
     @Transactional
-    public ProjectModel addProject(String name, UserModel owner) {
+    public ProjectModel addProject(String name, UserModel owner, String path) {
         ProjectModel pm = new ProjectModel();
-        pm.members = new ArrayList<UserModel>(List.of(owner));
+        pm.path = path;
+        ArrayList<UserModel> temp = new ArrayList<UserModel>();
+        temp.add(new UserModel(owner.avatar, owner.displayName, owner.isAdmin,
+                owner.login, owner.password, owner.id));
+        pm.members = temp;
         pm.owner = owner;
         pm.name = name;
         persist(pm);

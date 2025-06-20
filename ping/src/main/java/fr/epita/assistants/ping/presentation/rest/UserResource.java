@@ -25,6 +25,7 @@ import jakarta.inject.Inject;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -47,15 +48,13 @@ public class UserResource {
     @Path("/createadmin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createFirstAdmin() {
-        System.out.println("JE VIENS D ARRIVER LA TEAM");
-
         String log = "admin";
         String pwd = "admin";
         System.out.println("Ici");
         var a = userService.checkUser(log, pwd);
         System.out.println("J'ai check user");
         if (a == null) {
-            UserModel u = userService.add_User("prout", "admin", true, "admin", "admin");
+            UserModel u = userService.addUser("prout", "admin", true, "admin", "admin");
             String tk = Jwt.claims()
                     .issuer("ProutMan roi des cramptes")
                     .upn("Caca man")
@@ -109,7 +108,7 @@ public class UserResource {
         // On recupere les 3 prochains fields dans la database
         String avatar = "";
 
-        UserModel temp = userService.add_User(avatar, completeName, userRequest.isAdmin, userRequest.login,
+        UserModel temp = userService.addUser(avatar, completeName, userRequest.isAdmin, userRequest.login,
                 userRequest.password);
         if (temp == null) {
             return Response.ok(new ErrorInfo("NAN GROS NAN YUKI")).status(409).build();
@@ -267,7 +266,7 @@ public class UserResource {
             }
         }
 
-        UserModel user = userService.GetUser(id);
+        UserModel user = userService.getUser(id);
         // 403a gere
         if (user == null) {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
@@ -280,12 +279,12 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" }) // 401 + 403
     public Response DeleteUser(@PathParam("id") UUID id) {
-        List<ProjectModel> list = projectService.GetUserProjects(id);
+        List<ProjectModel> list = projectService.getUserProjects(id);
         if (list.size() > 0) {
             return Response.ok(new ErrorInfo("PAS LE DROIT DE DELETE")).status(403).build();
         }
 
-        Boolean bool = userService.DeleteUser(id);
+        Boolean bool = userService.deleteUser(id);
         if (bool == false) {
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }

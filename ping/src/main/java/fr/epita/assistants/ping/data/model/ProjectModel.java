@@ -1,7 +1,11 @@
 package fr.epita.assistants.ping.data.model;
 
 import java.util.UUID;
+
+import fr.epita.assistants.ping.domain.entity.UserEntity;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import io.vertx.mutiny.ext.auth.User;
 import jakarta.persistence.Column;
@@ -37,8 +41,9 @@ public class ProjectModel {
     @JoinColumn(name = "owner_id")
     public UserModel owner; // uuid (Foreign key)
 
+    @OneToMany
     @Column(name = "members")
-    public ArrayList<UserModel> members;
+    public List<UserModel> members;
 
     @Id
     @Column(name = "id")

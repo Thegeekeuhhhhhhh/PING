@@ -34,7 +34,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.time.*;
 
 @Path("/api/projects")
-public class ProjectRessource {
+public class ProjectResource {
 
     @Inject
     ProjectService projectService;
@@ -53,7 +53,7 @@ public class ProjectRessource {
         UUID id = UUID.fromString(jwt.getSubject());
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
-        for (ProjectModel pm : projectService.GetUserProjects(id)) {
+        for (ProjectModel pm : projectService.getUserProjects(id)) {
             ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
 
             for (UserModel um : pm.members) {
@@ -78,7 +78,7 @@ public class ProjectRessource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
         UUID id = UUID.fromString(jwt.getSubject());
-        UserModel owner = userService.GetUser(id);
+        UserModel owner = userService.getUser(id);
 
         ProjectModel project = projectService.addProject(request.name, owner);
 
@@ -100,7 +100,7 @@ public class ProjectRessource {
     public Response allProjects() {
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
-        for (ProjectModel pm : projectService.GetProjects()) {
+        for (ProjectModel pm : projectService.getProjects()) {
             ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
             for (UserModel um : pm.members) {
                 mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
@@ -279,7 +279,7 @@ public class ProjectRessource {
         }
 
         ProjectModel project = projectService.getProject(id);
-        UserModel newMember = userService.GetUser(addMemberToProjectRequest.userId);
+        UserModel newMember = userService.getUser(addMemberToProjectRequest.userId);
         if (project == null || newMember == null) {
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
@@ -370,7 +370,7 @@ public class ProjectRessource {
         }
 
         ProjectModel project = projectService.getProject(id);
-        UserModel newMember = userService.GetUser(addMemberToProjectRequest.userId);
+        UserModel newMember = userService.getUser(addMemberToProjectRequest.userId);
         if (project == null || newMember == null) {
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
