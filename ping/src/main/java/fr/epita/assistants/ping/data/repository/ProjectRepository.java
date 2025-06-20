@@ -63,6 +63,8 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
             return null;
         }
 
+        System.out.println("On est la");
+
         // Check si le nouveau proprio fait partie des membres
         Boolean ok = false;
         for (UserModel x : p.members) {
@@ -75,11 +77,13 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
             return null;
         }
 
+        System.out.println("Ca va changer");
+
         if (name.length() > 0) {
             p.name = name;
         }
         if (newId != null) {
-            p.id = newId;
+            p.owner.id = newId;
         }
         return p;
     }
@@ -89,5 +93,17 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         if (getProject(id) != null) {
             delete(getProject(id));
         }
+    }
+
+    @Transactional
+    public void addUserToProject(UUID id, UserModel user) {
+        ProjectModel p = getProject(id);
+        p.members.add(user);
+    }
+
+    @Transactional
+    public void deleteUserFromProject(UUID id, UserModel user) {
+        ProjectModel p = getProject(id);
+        p.members.remove(user);
     }
 }

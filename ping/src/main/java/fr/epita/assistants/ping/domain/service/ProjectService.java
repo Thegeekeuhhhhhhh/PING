@@ -41,14 +41,6 @@ public class ProjectService {
         new File(path + "/" + id.toString()).mkdirs();
     }
 
-    public void modifyDirectoryName(UUID oldId, UUID newId) {
-        if (oldId == null || newId == null) {
-            System.out.println("PAS D ID"); // On prend pas de risques
-            return;
-        }
-        new File(path + "/" + oldId.toString()).renameTo(new File(path + "/" + newId.toString()));
-    }
-
     public void deleteDirectory(UUID id) {
         if (id == null) {
             System.out.println("PAS D ID"); // On prend pas de risques
@@ -85,7 +77,9 @@ public class ProjectService {
 
     public ProjectModel updateProject(String name, UUID oldId, UUID newId) {
         ProjectModel temp = projectRepository.updateProject(name, oldId, newId);
-        modifyDirectoryName(oldId, temp.id);
+        if (temp == null) {
+            return null;
+        }
         return temp;
     }
 
@@ -111,5 +105,13 @@ public class ProjectService {
         }
 
         return res;
+    }
+
+    public void addUserToProject(UUID id, UserModel user) {
+        projectRepository.addUserToProject(id, user);
+    }
+
+    public void deleteUserFromProject(UUID id, UserModel user) {
+        projectRepository.deleteUserFromProject(id, user);
     }
 }

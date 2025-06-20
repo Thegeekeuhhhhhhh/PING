@@ -50,6 +50,9 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response userProjects(@QueryParam("onlyOwned") Boolean onlyOwned) {
+        if (onlyOwned == null) {
+            onlyOwned = false;
+        }
         UUID id = UUID.fromString(jwt.getSubject());
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
@@ -61,11 +64,11 @@ public class ProjectResource {
             }
             if (onlyOwned) {
                 if (id.equals(pm.owner.id)) {
-                    response.add(new ProjectResponse(pm.name, mr,
+                    response.add(new ProjectResponse(pm.id, pm.name, mr,
                             new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
                 }
             } else {
-                response.add(new ProjectResponse(pm.name, mr,
+                response.add(new ProjectResponse(pm.id, pm.name, mr,
                         new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
             }
         }
@@ -88,7 +91,7 @@ public class ProjectResource {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
 
-        return Response.ok(new ProjectResponse(project.name, mr,
+        return Response.ok(new ProjectResponse(project.id, project.name, mr,
                 new MemberResponse(project.owner.id, project.owner.displayName, project.owner.avatar))).status(200)
                 .build();
     }
@@ -98,14 +101,14 @@ public class ProjectResource {
     @RolesAllowed({ "admin" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response allProjects() {
-        ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
+        List<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
         for (ProjectModel pm : projectService.getProjects()) {
-            ArrayList<MemberResponse> mr = new ArrayList<MemberResponse>();
+            List<MemberResponse> mr = new ArrayList<MemberResponse>();
             for (UserModel um : pm.members) {
                 mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
             }
-            response.add(new ProjectResponse(pm.name, mr,
+            response.add(new ProjectResponse(pm.id, pm.name, mr,
                     new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
         }
         return Response.ok(response).status(200).build();
@@ -161,7 +164,7 @@ public class ProjectResource {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
 
-        return Response.ok(new ProjectResponse(p.name, mr,
+        return Response.ok(new ProjectResponse(p.id, p.name, mr,
                 new MemberResponse(p.owner.id, p.owner.displayName, p.owner.avatar))).status(200)
                 .build();
     }
@@ -203,12 +206,12 @@ public class ProjectResource {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
 
-        return Response.ok(new ProjectResponse(project.name, mr,
+        return Response.ok(new ProjectResponse(project.id, project.name, mr,
                 new MemberResponse(project.owner.id, project.owner.displayName, project.owner.avatar))).status(200)
                 .build();
     }
 
-    @GET
+    @DELETE
     @Path("/{id}")
     @RolesAllowed({ "admin", "user" })
     @Produces(MediaType.APPLICATION_JSON)
@@ -290,7 +293,7 @@ public class ProjectResource {
             }
         }
 
-        project.members.add(newMember);
+        projectService.addUserToProject(id, newMember);
 
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
@@ -379,7 +382,7 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("On va pas kick le chef du groupe en vrai")).status(409).build();
         }
 
-        project.members.remove(newMember); // jsp si ca marche
+        projectService.deleteUserFromProject(id, newMember);
 
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
