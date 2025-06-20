@@ -33,6 +33,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.*;
 
+import fr.epita.assistants.ping.utils.Logger;
+
 @Path("/api/projects")
 public class ProjectResource {
 

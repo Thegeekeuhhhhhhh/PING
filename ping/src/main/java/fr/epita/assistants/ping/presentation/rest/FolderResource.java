@@ -34,7 +34,7 @@ import java.util.*;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.*;
-
+import fr.epita.assistants.ping.utils.Logger;
 @Path("/api/projects/{projectId}/folders")
 public class FolderResource {
 
@@ -55,9 +55,11 @@ public class FolderResource {
         if (path == null || path.length() == 0) {
             path = "/";
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error p null");
             return Response.ok(new ErrorInfo("BAKA")).status(404).build();
         }
 
@@ -78,11 +80,13 @@ public class FolderResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
 
         List<GetFileResponse> res = projectService.ls(id);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path);
         return Response.ok(res).status(200).build();
     }
 }
