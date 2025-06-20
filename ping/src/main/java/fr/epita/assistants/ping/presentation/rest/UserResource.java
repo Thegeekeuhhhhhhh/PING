@@ -53,9 +53,7 @@ public class UserResource {
         Logger.logRequest("0", "/api/user/createadmin", "");
         String log = "admin";
         String pwd = "admin";
-        System.out.println("Ici");
         var a = userService.checkUser(log, pwd);
-        System.out.println("J'ai check user");
         if (a == null) {
             UserModel u = userService.addUser("prout", "admin", true, "admin", "admin");
             String tk = Jwt.claims()
@@ -78,7 +76,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" }) // 401 + 403
     public Response user(UserRequest userRequest) {
-        
+
         if (userRequest == null || userRequest.login == null || userRequest.password == null) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/user", "error there have no body or the body is incorrect");
             return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(401).build();
@@ -147,7 +145,7 @@ public class UserResource {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
-        
+
         System.out.println(jwt.toString());
         System.out.println("J ARRIVE");
         if (loginRequest == null || loginRequest.login == null || loginRequest.password == null) {
@@ -237,7 +235,7 @@ public class UserResource {
             String idstr = jwt.getSubject();
             UUID realId = UUID.fromString(idstr);
             if (!realId.equals(id)) {
-                Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "PUT " +"error wrong rigth");
+                Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + "error wrong rigth");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
@@ -258,10 +256,10 @@ public class UserResource {
 
         UserModel user = userService.updateUser(id, dpname, avatar, passwd);
         if (user == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}","PUT " + "error user null");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + "error user null");
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "PUT " +"all ok !!!");
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + "all ok !!!");
         return Response.ok(new UserResponse(user.id, user.login, user.displayName, user.isAdmin, user.avatar))
                 .status(200).build();
     }
@@ -271,7 +269,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response GetUser(@PathParam("id") UUID id) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " +id);
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " + id);
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -282,7 +280,7 @@ public class UserResource {
             String idstr = jwt.getSubject();
             UUID realId = UUID.fromString(idstr);
             if (!realId.equals(id)) {
-                Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}","GEt " + "error les droits des femmes");
+                Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "GEt " + "error les droits des femmes");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
@@ -290,10 +288,10 @@ public class UserResource {
         UserModel user = userService.getUser(id);
         // 403a gere
         if (user == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}","GEt " + "error user null");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "GEt " + "error user null");
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " +"all ok !!!");
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " + "all ok !!!");
         return Response.ok(new UserResponse(user.id, user.login, user.displayName, user.isAdmin, user.avatar)).build();
     }
 
@@ -302,19 +300,19 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" }) // 401 + 403
     public Response DeleteUser(@PathParam("id") UUID id) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " +id);
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " + id);
         List<ProjectModel> list = projectService.getUserProjects(id);
         if (list.size() > 0) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}","GEt " + "error no user");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "GEt " + "error no user");
             return Response.ok(new ErrorInfo("PAS LE DROIT DE DELETE")).status(403).build();
         }
 
         Boolean bool = userService.deleteUser(id);
         if (bool == false) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}","GEt " + "error bool false");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "GEt " + "error bool false");
             return Response.ok(new ErrorInfo("KENAN C EST VRAIMENT PAS BIEN")).status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " +"all ok !!!");
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " + "all ok !!!");
         return Response.ok().status(204).build();
     }
 }

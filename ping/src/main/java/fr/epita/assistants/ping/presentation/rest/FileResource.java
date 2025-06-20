@@ -33,6 +33,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.*;
 import fr.epita.assistants.ping.utils.Logger;
+
 @Path("/api/projects/{projectId}/files")
 public class FileResource {
 
@@ -50,8 +51,7 @@ public class FileResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response userProjects(@PathParam("projectId") UUID id) {
-        System.out.println(id);
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",  id.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", id.toString());
         return Response.ok(id).status(200).build();
     }
 }
