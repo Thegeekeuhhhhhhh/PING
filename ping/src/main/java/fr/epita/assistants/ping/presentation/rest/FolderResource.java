@@ -86,7 +86,7 @@ public class FolderResource {
         }
 
         List<GetFileResponse> res = projectService.ls(id);
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  "all ok !!!");
         return Response.ok(res).status(200).build();
     }
 }

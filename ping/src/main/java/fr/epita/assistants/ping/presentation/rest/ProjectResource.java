@@ -47,11 +47,14 @@ public class ProjectResource {
     @Inject
     JsonWebToken jwt;
 
+    private static final String PROJECT_DEFAULT_PATH = System.getenv("PROJECT_DEFAULT_PATH");
+
     @GET
     @Path("/")
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response userProjects(@QueryParam("onlyOwned") Boolean onlyOwned) {
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "GEt " + onlyOwned.toString());
         UUID id = UUID.fromString(jwt.getSubject());
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
@@ -71,6 +74,7 @@ public class ProjectResource {
                         new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
             }
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "GEt "+ "all ok !!!");
         return Response.ok(response).status(200).build();
     }
 
@@ -79,6 +83,7 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.toString());
         UUID id = UUID.fromString(jwt.getSubject());
         UserModel owner = userService.getUser(id);
 
@@ -89,7 +94,7 @@ public class ProjectResource {
         for (UserModel um : project.members) {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + "all ok !!!");
         return Response.ok(new ProjectResponse(project.name, mr,
                 new MemberResponse(project.owner.id, project.owner.displayName, project.owner.avatar))).status(200)
                 .build();
@@ -100,6 +105,7 @@ public class ProjectResource {
     @RolesAllowed({ "admin" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response allProjects() {
+        Logger.logRequest(jwt.getSubject(), "/api/projects/all", "");
         ArrayList<ProjectResponse> response = new ArrayList<ProjectResponse>();
 
         for (ProjectModel pm : projectService.getProjects()) {
@@ -110,6 +116,7 @@ public class ProjectResource {
             response.add(new ProjectResponse(pm.name, mr,
                     new MemberResponse(pm.owner.id, pm.owner.displayName, pm.owner.avatar)));
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/all", "all ok !!!");
         return Response.ok(response).status(200).build();
     }
 
@@ -118,11 +125,14 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateProject(@PathParam("id") UUID id, UpdateProjectRequest updateProjectRequest) {
+        
         if (updateProjectRequest == null
                 || (updateProjectRequest.name == null && updateProjectRequest.newOwnerId == null)) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error body is incorrect");
             return Response.ok(new ErrorInfo("Nan la c'est abuse en vrai"))
                     .status(404).build();
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + id.toString() + updateProjectRequest.toString());
 
         String name = updateProjectRequest.name;
         UUID newId = updateProjectRequest.newOwnerId;
@@ -147,12 +157,14 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error not ok");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
 
         ProjectModel p = projectService.updateProject(name, id, newId);
         if (p == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error p null");
             return Response.ok(new ErrorInfo("ARRETE Nan la c'est abuse en vrai"))
                     .status(404).build();
         }
@@ -162,7 +174,7 @@ public class ProjectResource {
         for (UserModel um : p.members) {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "all ok !!!");
         return Response.ok(new ProjectResponse(p.name, mr,
                 new MemberResponse(p.owner.id, p.owner.displayName, p.owner.avatar))).status(200)
                 .build();
@@ -173,6 +185,7 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(@PathParam("id") UUID id) {
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "GET " + id.toString());
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -190,12 +203,14 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
 
         ProjectModel project = projectService.getProject(id);
         if (project == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error project null");
             return Response.ok(new ErrorInfo("Y'a rien la")).status(404).build();
         }
 
@@ -204,17 +219,18 @@ public class ProjectResource {
         for (UserModel um : project.members) {
             mr.add(new MemberResponse(um.id, um.displayName, um.avatar));
         }
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "GET " + "all ok !!!");
         return Response.ok(new ProjectResponse(project.name, mr,
                 new MemberResponse(project.owner.id, project.owner.displayName, project.owner.avatar))).status(200)
                 .build();
     }
 
-    @GET
+    @DELETE
     @Path("/{id}")
     @RolesAllowed({ "admin", "user" })
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteProject(@PathParam("id") UUID id) {
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + id.toString());
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -234,17 +250,19 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
 
         ProjectModel project = projectService.getProject(id);
         if (project == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "error project null");
             return Response.ok(new ErrorInfo("Y'a rien la")).status(404).build();
         }
 
         projectService.deleteProject(id);
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "all ok !!!");
         return Response.ok(new SimpleMessageResponse("WOW")).status(204).build();
     }
 
@@ -254,8 +272,10 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addMember(@PathParam("id") UUID id, AddMemberToProjectRequest addMemberToProjectRequest) {
         if (addMemberToProjectRequest == null || addMemberToProjectRequest.userId == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error body incorrect");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/add-user",  id.toString() + addMemberToProjectRequest.toString());
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
@@ -276,6 +296,7 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
@@ -283,17 +304,19 @@ public class ProjectResource {
         ProjectModel project = projectService.getProject(id);
         UserModel newMember = userService.getUser(addMemberToProjectRequest.userId);
         if (project == null || newMember == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error p null n null");
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
 
         for (UserModel user : project.members) {
             if (user.id.equals(newMember.id)) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error user already present");
                 return Response.ok(new ErrorInfo("T'es deja dans le projet faut suivre un peu...")).status(409).build();
             }
         }
 
         project.members.add(newMember);
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/add-user",  "all ok !!!");
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
 
@@ -304,8 +327,10 @@ public class ProjectResource {
     public Response executeFeature(@PathParam("id") UUID id, ExecuteFeatureRequest executeFeatureRequest) {
         if (executeFeatureRequest == null || executeFeatureRequest.feature == null
                 || executeFeatureRequest.command == null || executeFeatureRequest.params == null) {
+                    Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error bodu incorrect");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec",  id.toString() + executeFeatureRequest.toString());
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
@@ -326,18 +351,20 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec", "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
 
         ProjectModel project = projectService.getProject(id);
         if (project == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec", "error project null");
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
 
         // TODO
         // Faire le gros du travail
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec",  "all ok !!!");
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
 
@@ -347,8 +374,10 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeMember(@PathParam("id") UUID id, AddMemberToProjectRequest addMemberToProjectRequest) {
         if (addMemberToProjectRequest == null || addMemberToProjectRequest.userId == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "error project null");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/remove-user",  id.toString() + addMemberToProjectRequest.toString());
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
@@ -367,6 +396,7 @@ public class ProjectResource {
                 }
             }
             if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
@@ -374,15 +404,17 @@ public class ProjectResource {
         ProjectModel project = projectService.getProject(id);
         UserModel newMember = userService.getUser(addMemberToProjectRequest.userId);
         if (project == null || newMember == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "error project null");
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
 
         if (project.owner.id.equals(newMember.id)) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "error id equals");
             return Response.ok(new ErrorInfo("On va pas kick le chef du groupe en vrai")).status(409).build();
         }
 
         project.members.remove(newMember); // jsp si ca marche
-
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/remove-user",  "all ok !!!");
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
 
