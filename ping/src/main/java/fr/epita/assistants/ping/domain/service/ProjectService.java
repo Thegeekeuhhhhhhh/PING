@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
-
+import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -31,7 +31,7 @@ public class ProjectService {
     UserRepository userRepository;
 
     // @ConfigProperty(name = "PROJECT_DEFAULT_PATH")
-    String path = "/tmp/projects";
+    String path = System.getenv("PROJECT_DEFAULT_PATH");
 
     public void createDirectory(UUID id) {
         if (id == null) {
@@ -105,6 +105,60 @@ public class ProjectService {
         }
 
         return res;
+    }
+
+    public Boolean createFolder(String p) {
+        File theDir = new File(path + "/" + p);
+        if (!theDir.exists()){
+            theDir.mkdirs();
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean moveFolder(String p, String p2) {
+        File theDir = new File(path + "/" + p);
+        if (!theDir.exists()){
+            return false;
+        }
+        Path source = Paths.get(path + "/" + p);
+        Path target = Paths.get(path + "/" + p2);
+    
+        Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        return true;
+    }
+
+    public Boolean delete(String p) {
+        Path lol = Paths.get(path + "/" + p);
+        if (!Files.exists(lol)) {
+            return false;
+        }
+
+        Stack<Path> s = new Stack<>();
+        Stack<Path> del = new Stack<>();
+        try {
+            s.push(lol);
+            while(!s.isEmpty()) {
+                Path tmp = s.pop();
+                if (tmp.toString() != "/") // je sais pas car j ai un probleme de VS CODE
+                {
+                    del.push(tmp);
+                }
+                if (Files.isDirectory(tmp)) {
+                    for (var a: Files.list(tmp)) {
+                        s.push(a);
+                    }
+                }
+            }
+            while (!del.isEmpty()) {
+                Path tmp = del.pop();
+                Files.delete(tmp);
+            }
+        } catch (IOException e) {
+            System.out.println("WTF CA MARCHE PLUS");
+        }
+
+        return true;
     }
 
     public void addUserToProject(UUID id, UserModel user) {
