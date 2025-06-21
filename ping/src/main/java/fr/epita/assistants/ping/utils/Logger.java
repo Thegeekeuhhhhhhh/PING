@@ -2,8 +2,11 @@ package fr.epita.assistants.ping.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Map;
 
 public class Logger {
     private static final String RESET = "\u001B[0m";
@@ -58,5 +61,33 @@ public class Logger {
             System.err.println(message);
         else
             System.out.println(message);
+    }
+
+    // Version LEO
+
+    private static final String RESET_TEXT = "\u001B[0m";
+    private static final String RED_TEXT = "\u001B[31m";
+    private static final String GREEN_TEXT = "\u001B[32m";
+
+    private static String timestamp() {
+        return new SimpleDateFormat("dd/MM/yy - HH:mm:ss")
+                .format(Calendar.getInstance().getTime());
+    }
+
+    public static void simpleLog(String message) {
+        String tolog = GREEN_TEXT + " [" + timestamp() + "] " + RESET_TEXT;
+        System.out.println(tolog);
+
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n",
+                    envName,
+                    env.get(envName));
+        }
+    }
+
+    public static void errorLog(String message) {
+        String tolog = RED_TEXT + " [" + timestamp() + "] " + RESET_TEXT;
+        System.out.println(tolog);
     }
 }

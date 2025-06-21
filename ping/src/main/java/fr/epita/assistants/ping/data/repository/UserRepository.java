@@ -12,7 +12,7 @@ import java.util.UUID;
 public class UserRepository implements PanacheRepository<UserModel> {
 
     @Transactional
-    public UserModel add_User_in_Database(String avatar, String displayName, Boolean isAdmin, String login,
+    public UserModel addUserInDatabase(String avatar, String displayName, Boolean isAdmin, String login,
             String password) {
         if (find("login", login).count() > 0) {
             return null;
@@ -45,29 +45,44 @@ public class UserRepository implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public UserModel updateUser(Long id, String displayName, String password, String avatar) {
-        UserModel user = findById(id);
+    public UserModel updateUser(UUID id, String displayName, String password, String avatar) {
+        UserModel user = getUser(id);
         if (user == null) {
             return null;
         }
-        user.password = password;
-        user.displayName = displayName;
-        user.avatar = avatar;
-        return user;
-    }
 
-    @Transactional
-    public UserModel GetUser(Long id) {
-        UserModel user = findById(id);
-        if (user == null) {
-            return null;
+        if (password.length() > 0) {
+            user.password = password;
+        }
+        if (displayName.length() > 0) {
+            user.displayName = displayName;
+        }
+        if (avatar.length() > 0) {
+            user.avatar = avatar;
         }
         return user;
     }
 
     @Transactional
-    public boolean DeleteUser(Long id) {
-        return deleteById(id);
+    public UserModel getUser(UUID id) {
+        for (UserModel um : listAll()) {
+            if (um.id.equals(id)) {
+                return new UserModel(um.avatar, um.displayName, um.isAdmin, um.login, um.password, um.id);
+            }
+        }
+        return null;
+    }
+
+    @Transactional
+    public boolean deleteUser(UUID id) {
+        UserModel temp = getUser(id);
+        for (UserModel u : listAll()) {
+            if (u.id.equals(temp.id)) {
+                delete(u);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional

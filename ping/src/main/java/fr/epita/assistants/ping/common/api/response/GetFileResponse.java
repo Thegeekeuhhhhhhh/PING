@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.common.api.request;
+package fr.epita.assistants.ping.common.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProjectRequest {
+public class GetFileResponse {
     public String name;
+    public String path;
+    public Boolean isDirectory;
 }

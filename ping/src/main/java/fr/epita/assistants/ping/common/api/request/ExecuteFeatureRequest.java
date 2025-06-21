@@ -1,5 +1,8 @@
 package fr.epita.assistants.ping.common.api.request;
 
+import java.util.List;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProjectRequest {
-    public String name;
+public class ExecuteFeatureRequest {
+    public String feature;
+    public String command;
+    public List<String> params;
 }
