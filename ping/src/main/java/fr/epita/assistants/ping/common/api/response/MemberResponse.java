@@ -13,6 +13,6 @@ import lombok.Setter;
 @Setter
 public class MemberResponse {
     public UUID id;
-    public String name;
+    public String displayName;
     public String avatar;
 }
