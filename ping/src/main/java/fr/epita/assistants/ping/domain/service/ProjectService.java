@@ -33,8 +33,8 @@ public class ProjectService {
 
     @Inject
     UserRepository userRepository;
-
-    String path = "/tmp/projects"; // besoins de prendre dans .env mais pas reussi
+    @ConfigProperty(name = "PROJECT_DEFAULT_PATH", defaultValue = "")
+    String path;
             
     public void createDirectory(UUID id) {
         if (id == null) {
@@ -65,10 +65,11 @@ public class ProjectService {
     }
 
     public ProjectModel addProject(String name, UserModel owner) {
-        createDirectory(owner.id);
         for (UserModel temp : userRepository.listUsers()) {
             if (temp.id.equals(owner.id)) {
-                return projectRepository.addProject(name, temp, path);
+                var tmp = projectRepository.addProject(name, temp, path);
+                createDirectory(projectRepository.getProject_by_name(name).id);
+                return tmp;
             }
         }
         return null;
@@ -88,6 +89,7 @@ public class ProjectService {
 
     public void deleteProject(UUID id) {
         projectRepository.deleteProject(id);
+        delete(id.toString());
     }
 
     public List<GetFileResponse> ls(UUID id) {
@@ -149,7 +151,7 @@ public class ProjectService {
             s.push(lol);
             while(!s.isEmpty()) {
                 Path tmp = s.pop();
-                if (tmp.toString() != "/") // je sais pas car j ai un probleme de VS CODE
+                if (!tmp.toString().equals("/")) // je sais pas car j ai un probleme de VS CODE
                 {
                     del.push(tmp);
                 }
