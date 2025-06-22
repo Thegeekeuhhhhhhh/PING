@@ -21,6 +21,10 @@ import fr.epita.assistants.ping.common.api.response.GetFileResponse;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 
+
+import java.nio.file.StandardCopyOption;
+
+
 @ApplicationScoped
 public class ProjectService {
 
@@ -30,9 +34,8 @@ public class ProjectService {
     @Inject
     UserRepository userRepository;
 
-    // @ConfigProperty(name = "PROJECT_DEFAULT_PATH")
-    String path = System.getenv("PROJECT_DEFAULT_PATH");
-
+    String path = "/tmp/projects"; // besoins de prendre dans .env mais pas reussi
+            
     public void createDirectory(UUID id) {
         if (id == null) {
             System.out.println("PAS D ID"); // On prend pas de risques
@@ -90,7 +93,7 @@ public class ProjectService {
     public List<GetFileResponse> ls(UUID id) {
         Path lol = Paths.get(path + "/" + id.toString());
         if (!Files.exists(lol)) {
-            return null;
+            return new ArrayList<GetFileResponse>();
         }
 
         ArrayList<GetFileResponse> res = new ArrayList<GetFileResponse>();
@@ -108,6 +111,9 @@ public class ProjectService {
     }
 
     public Boolean createFolder(String p) {
+        System.out.println("=============================");
+        System.out.println(path + "/" + p);
+        System.out.println("=============================");
         File theDir = new File(path + "/" + p);
         if (!theDir.exists()){
             theDir.mkdirs();
@@ -123,8 +129,11 @@ public class ProjectService {
         }
         Path source = Paths.get(path + "/" + p);
         Path target = Paths.get(path + "/" + p2);
-    
-        Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 
@@ -145,9 +154,9 @@ public class ProjectService {
                     del.push(tmp);
                 }
                 if (Files.isDirectory(tmp)) {
-                    for (var a: Files.list(tmp)) {
-                        s.push(a);
-                    }
+                    Files.list(tmp).forEach(elt -> 
+                        {s.push(elt);
+                    });
                 }
             }
             while (!del.isEmpty()) {

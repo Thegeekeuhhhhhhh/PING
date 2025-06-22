@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FolderDeleteRequest {
+public class FolderMoveRequest {
     public String src;
     public String dst;
 }
