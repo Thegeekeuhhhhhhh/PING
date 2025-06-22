@@ -40,7 +40,8 @@ import java.time.*;
 import fr.epita.assistants.ping.utils.Logger;
 @Path("/api/projects/{projectId}/folders")
 public class FolderResource {
-
+    @Inject
+    Logger Logger;
     @Inject
     ProjectService projectService;
 

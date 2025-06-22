@@ -37,7 +37,8 @@ import fr.epita.assistants.ping.utils.Logger;
 
 @Path("/api/projects")
 public class ProjectResource {
-
+    @Inject
+    Logger Logger;
     @Inject
     ProjectService projectService;
 

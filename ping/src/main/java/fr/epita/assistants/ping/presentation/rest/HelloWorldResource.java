@@ -6,8 +6,14 @@ import jakarta.ws.rs.core.Response;
 
 import static fr.epita.assistants.ping.errors.ErrorsCode.EXAMPLE_ERROR;
 import fr.epita.assistants.ping.utils.Logger;
+import jakarta.inject.Inject;
+
+
 @Path("/api")
 public class HelloWorldResource {
+
+    @Inject
+    Logger Logger;
 
     @GET
     @Path("/hello")

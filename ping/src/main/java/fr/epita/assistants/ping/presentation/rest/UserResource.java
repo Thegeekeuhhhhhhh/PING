@@ -36,7 +36,8 @@ import fr.epita.assistants.ping.utils.Logger;
 
 @Path("/api/user")
 public class UserResource {
-
+    @Inject
+    Logger Logger;
     @Inject
     UserService userService;
 
