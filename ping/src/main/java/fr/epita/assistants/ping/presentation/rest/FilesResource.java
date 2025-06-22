@@ -12,6 +12,7 @@ import fr.epita.assistants.ping.common.api.request.CreateFileRequest;
 import fr.epita.assistants.ping.common.api.request.DeleteFileRequest;
 import fr.epita.assistants.ping.common.api.request.ExecuteFeatureRequest;
 import fr.epita.assistants.ping.common.api.request.LoginRequest;
+import fr.epita.assistants.ping.common.api.request.MoveFileRequest;
 import fr.epita.assistants.ping.common.api.request.ProjectRequest;
 import fr.epita.assistants.ping.common.api.request.UpdateProjectRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
@@ -36,6 +37,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.time.*;
 import fr.epita.assistants.ping.utils.Logger;
@@ -214,13 +216,93 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("IMPOSTOR OR HACKER")).status(403).build();
         }
 
-        // 404, Path not found
+        // 409, file exists
         if (doFileAlreadyExists(projectsPath + "/" + id.toString() + "/" + createFileRequest.relativePath)) {
             return Response.ok(new ErrorInfo("pfffffff...")).status(409).build();
         }
 
         // TODO
         // Create file -> ez pz (jsp ce qu'on met comme content)
+
+        return Response.ok(new SimpleMessageResponse("yo")).status(201).build();
+    }
+
+    @PUT
+    @Path("/move")
+    @RolesAllowed({ "admin", "user" }) // 401 + 403
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response moveFile(@PathParam("projectId") UUID id, MoveFileRequest moveFileRequest) {
+
+        // 400, path invalid
+        if (moveFileRequest == null || isPathInvalid(moveFileRequest.src) || isPathInvalid(moveFileRequest.dst)) {
+            return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
+        }
+
+        // TODO
+        // Je sais pas si on met le chemin relatif ou absolu dans la request
+
+        // 401, -> Deja fait
+
+        // 404 incongru
+        ProjectModel p = projectService.getProject(id);
+        if (p == null) {
+            return Response.ok(new ErrorInfo("Vilain")).status(404).build();
+        }
+
+        // 403, check path traversal attack
+        if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
+                || isPathTraversalAttack(moveFileRequest.src) || isPathTraversalAttack(moveFileRequest.dst)) {
+            return Response.ok(new ErrorInfo("IMPOSTOR OR HACKER")).status(403).build();
+        }
+
+        // 409, file exists
+        if (doFileAlreadyExists(moveFileRequest.dst)) {
+            return Response.ok(new ErrorInfo("pfffffff...")).status(409).build();
+        }
+
+        // TODO
+        // Move file from src to dst
+
+        return Response.ok(new SimpleMessageResponse("yo")).status(204).build();
+    }
+
+    @POST
+    @Path("/upload")
+    @RolesAllowed({ "admin", "user" }) // 401 + 403
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response uploadFile(@PathParam("projectId") UUID id, @QueryParam("path") String path,
+            InputStream inputStream) {
+        try {
+            byte[] content = inputStream.readAllBytes();
+        } catch (Exception e) {
+            return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
+        }
+
+        // 400, path invalid
+        if (path == null || isPathInvalid(path)) {
+            return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
+        }
+
+        // TODO
+        // Je sais pas si on met le chemin relatif ou absolu dans la request
+
+        // 401, -> Deja fait
+
+        // 404 incongru
+        ProjectModel p = projectService.getProject(id);
+        if (p == null) {
+            return Response.ok(new ErrorInfo("Vilain")).status(404).build();
+        }
+
+        // 403, check path traversal attack
+        if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
+                || isPathTraversalAttack(path)) {
+            return Response.ok(new ErrorInfo("IMPOSTOR OR HACKER")).status(403).build();
+        }
+
+        // TODO
+        // Create file and write in it
 
         return Response.ok(new SimpleMessageResponse("yo")).status(201).build();
     }
