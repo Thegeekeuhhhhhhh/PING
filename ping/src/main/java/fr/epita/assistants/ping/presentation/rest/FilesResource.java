@@ -44,7 +44,9 @@ import fr.epita.assistants.ping.utils.Logger;
 
 @Path("/api/projects/{projectId}/files")
 public class FilesResource {
-
+    @Inject
+    Logger Logger;
+    
     @ConfigProperty(name = "PROJECT_DEFAULT_PATH")
     String projectsPath;
 
@@ -92,7 +94,7 @@ public class FilesResource {
     }
 
     Boolean isPathTraversalAttack(String path) {
-        // TODO
+        // TODO / NOAH DONE
         // On prend en parametre un chemin relatif
         // par exemple:
         // isPathTraversalAttack("/") -> C'est pas une attaque parce qu'on sort pas de
@@ -103,17 +105,24 @@ public class FilesResource {
 
         // isPathTraversalAttack("prout/caca/../../..") -> On va sortir du projet donc
         // on renvoie true
-        return false;
+
+        // Noah: Une version temporaire voir définition root selon léo
+
+        try {
+            /*TODO A modifier important*/ var root = Paths.get("/").normalize().toAbsolutePath();
+            var target = root.resolve(path).normalize();
+            return !target.startsWith(root);
+        }catch (Exception e) {
+            return true;
+        }
     }
 
     Boolean isPathNotFound(String path) {
-        // TODO
-        return false;
+        return !new File(path).exists();
     }
 
     Boolean doFileAlreadyExists(String path) {
-        // TODO
-        return false;
+        return new File(path).exists();
     }
 
     @GET
@@ -221,8 +230,20 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("pfffffff...")).status(409).build();
         }
 
-        // TODO
+        // TODO / NOAH DONE
         // Create file -> ez pz (jsp ce qu'on met comme content)
+        try {
+            File file = new File(projectsPath + "/" + id.toString() + "/" + createFileRequest.relativePath);
+            file.getParentFile().mkdirs();
+            boolean created = file.createNewFile();
+            if (!created) { // peut-être pas nécéssaire
+                Logger.error("File creation test already exist");
+                return Response.ok(new ErrorInfo("Already exists")).status(409).build();
+            }
+        } catch (Exception e) {
+                Logger.error("File creation test Internal Error");
+                return Response.ok(new ErrorInfo("Internal Error")).status(500).build();
+        }
 
         return Response.ok(new SimpleMessageResponse("yo")).status(201).build();
     }
@@ -240,6 +261,7 @@ public class FilesResource {
 
         // TODO
         // Je sais pas si on met le chemin relatif ou absolu dans la request
+        // Je sais pas non plus
 
         // 401, -> Deja fait
 
@@ -260,8 +282,22 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("pfffffff...")).status(409).build();
         }
 
-        // TODO
+        // TODO / NOAH DONE
         // Move file from src to dst
+        File srcFile = new File(projectsPath + "/" + id.toString() + "/" + moveFileRequest.src);
+        File dstFile = new File(projectsPath + "/" + id.toString() + "/" + moveFileRequest.dst);
+
+        if (!srcFile.exists()) {
+            Logger.error("Source not found");
+            return Response.ok(new ErrorInfo("Cannot move file - Source not found")).status(404).build();
+        }
+
+        dstFile.getParentFile().mkdirs(); // Crée les dossiers nécessaires
+        boolean success = srcFile.renameTo(dstFile);
+        if (!success) {
+            Logger.error("Cannot move file");
+            return Response.ok(new ErrorInfo("Cannot move file")).status(500).build();
+        }
 
         return Response.ok(new SimpleMessageResponse("yo")).status(204).build();
     }
@@ -273,19 +309,23 @@ public class FilesResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response uploadFile(@PathParam("projectId") UUID id, @QueryParam("path") String path,
             InputStream inputStream) {
+        byte[] content;
         try {
-            byte[] content = inputStream.readAllBytes();
+            content = inputStream.readAllBytes();
         } catch (Exception e) {
+            Logger.error("Fais un effort brozer - uploadFile");
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
 
         // 400, path invalid
         if (path == null || isPathInvalid(path)) {
-            return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
+            Logger.error("Fais un effort brozer 2 - uploadFile");
+            return Response.ok(new ErrorInfo("Fais un effort brozer 2")).status(400).build();
         }
 
         // TODO
         // Je sais pas si on met le chemin relatif ou absolu dans la request
+        // Je sais pas non plus
 
         // 401, -> Deja fait
 
@@ -301,8 +341,16 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("IMPOSTOR OR HACKER")).status(403).build();
         }
 
-        // TODO
+        // TODO / DONE NOAH
         // Create file and write in it
+        try {
+            File file = new File(projectsPath + "/" + id.toString() + "/" + path);
+            file.getParentFile().mkdirs(); // Crée les dossiers si besoin
+            java.nio.file.Files.write(file.toPath(), content);
+        } catch (Exception e) {
+            Logger.error("Could not write file - upload file error");
+            return Response.ok(new ErrorInfo("Could not write file")).status(500).build();
+        }
 
         return Response.ok(new SimpleMessageResponse("yo")).status(201).build();
     }

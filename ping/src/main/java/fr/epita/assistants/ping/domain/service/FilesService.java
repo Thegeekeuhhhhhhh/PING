@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 import fr.epita.assistants.ping.common.api.response.GetFileResponse;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
-
+import java.nio.file.StandardCopyOption;
 @ApplicationScoped
 public class FilesService {
 
@@ -74,5 +74,20 @@ public class FilesService {
         } else {
             deleteFileOrFolder(projectsPath + "/" + id.toString() + "/" + path);
         }
+    }
+
+    public Boolean moveFile(String p, String p2) {
+        File file = new File(projectsPath + "/" + p);
+        if (!file.exists()){
+            return false;
+        }
+        Path source = Paths.get(projectsPath + "/" + p);
+        Path target = Paths.get(projectsPath + "/" + p2);
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }
