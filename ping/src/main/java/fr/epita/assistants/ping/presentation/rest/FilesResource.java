@@ -6,28 +6,12 @@ import jakarta.ws.rs.core.Response;
 import fr.epita.assistants.ping.domain.service.FilesService;
 import fr.epita.assistants.ping.domain.service.ProjectService;
 import fr.epita.assistants.ping.domain.service.UserService;
-import fr.epita.assistants.ping.common.api.request.UserRequest;
-import fr.epita.assistants.ping.common.api.request.AddMemberToProjectRequest;
 import fr.epita.assistants.ping.common.api.request.CreateFileRequest;
 import fr.epita.assistants.ping.common.api.request.DeleteFileRequest;
-import fr.epita.assistants.ping.common.api.request.ExecuteFeatureRequest;
-import fr.epita.assistants.ping.common.api.request.LoginRequest;
 import fr.epita.assistants.ping.common.api.request.MoveFileRequest;
-import fr.epita.assistants.ping.common.api.request.ProjectRequest;
-import fr.epita.assistants.ping.common.api.request.UpdateProjectRequest;
-import fr.epita.assistants.ping.common.api.response.UserResponse;
-import fr.epita.assistants.ping.common.api.request.UpdateRequest;
 import fr.epita.assistants.ping.data.model.ProjectModel;
-import fr.epita.assistants.ping.data.model.UserModel;
-import fr.epita.assistants.ping.common.api.response.LoginResponse;
-import fr.epita.assistants.ping.common.api.response.MemberResponse;
-import fr.epita.assistants.ping.common.api.response.ProjectResponse;
 import fr.epita.assistants.ping.common.api.response.SimpleMessageResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
-import io.quarkus.security.Authenticated;
-import io.smallrye.jwt.build.Jwt;
-import io.smallrye.jwt.build.JwtSignature;
-import io.vertx.core.json.JsonObject;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 
@@ -39,7 +23,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.time.*;
+
 import fr.epita.assistants.ping.utils.Logger;
 
 @Path("/api/projects/{projectId}/files")

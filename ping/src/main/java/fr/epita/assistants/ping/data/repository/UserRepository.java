@@ -47,6 +47,7 @@ public class UserRepository implements PanacheRepository<UserModel> {
     @Transactional
     public UserModel updateUser(UUID id, String displayName, String password, String avatar) {
         UserModel user = getUser(id);
+        
         if (user == null) {
             return null;
         }
@@ -60,6 +61,8 @@ public class UserRepository implements PanacheRepository<UserModel> {
         if (avatar.length() > 0) {
             user.avatar = avatar;
         }
+        // la meta c est delete, modifier, puis ajoute RIZZ NO CAP
+        // GO SE FAIRE FLAG TRICHE A CAUSE DES EMOJIS 🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆🦆
         return user;
     }
 
@@ -67,7 +70,7 @@ public class UserRepository implements PanacheRepository<UserModel> {
     public UserModel getUser(UUID id) {
         for (UserModel um : listAll()) {
             if (um.id.equals(id)) {
-                return new UserModel(um.avatar, um.displayName, um.isAdmin, um.login, um.password, um.id);
+                return um;
             }
         }
         return null;
