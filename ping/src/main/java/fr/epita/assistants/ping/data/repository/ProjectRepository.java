@@ -70,6 +70,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @Transactional
     public ProjectModel updateProject(String name, UUID oldId, UUID newId) {
         ProjectModel p = getProject(oldId);
+        System.out.println("on est la ici");
         if (p == null) {
             return null;
         }
@@ -79,22 +80,22 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         // Check si le nouveau proprio fait partie des membres
         Boolean ok = false;
         for (UserModel x : p.members) {
+            System.out.println(x.displayName);
             if (x.id.equals(newId)) {
+                if (name.length() > 0) {
+                    p.name = name;
+                }
+                if (newId != null) {
+                    p.owner = x;
+                }
                 ok = true;
                 break;
             }
+
         }
         if (!ok) {
+            System.out.println("PTDRRRR");
             return null;
-        }
-
-        System.out.println("Ca va changer");
-
-        if (name.length() > 0) {
-            p.name = name;
-        }
-        if (newId != null) {
-            p.owner.id = newId;
         }
         return p;
     }
