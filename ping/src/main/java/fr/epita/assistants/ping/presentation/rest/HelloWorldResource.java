@@ -8,7 +8,6 @@ import static fr.epita.assistants.ping.errors.ErrorsCode.EXAMPLE_ERROR;
 import fr.epita.assistants.ping.utils.Logger;
 import jakarta.inject.Inject;
 
-
 @Path("/api")
 public class HelloWorldResource {
 
@@ -19,7 +18,7 @@ public class HelloWorldResource {
     @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
     public Response helloWorld() {
-        Logger.logRequest("0", "/api/hello",  "all ok !!!");
+        Logger.logRequest("0", "/api/hello", "all ok !!!");
         return Response.ok("Hello World !").build();
     }
 

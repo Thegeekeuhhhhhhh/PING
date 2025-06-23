@@ -12,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.util.Optional;
 
-
 @ApplicationScoped
 public class Logger {
     private final String RESET = "\u001B[0m";
@@ -81,7 +80,7 @@ public class Logger {
                 .format(Calendar.getInstance().getTime());
     }
 
-    public  void simpleLog(String message) {
+    public void simpleLog(String message) {
         String tolog = GREEN_TEXT + " [" + timestamp() + "] " + RESET_TEXT;
         System.out.println(tolog);
 

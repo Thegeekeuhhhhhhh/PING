@@ -21,9 +21,7 @@ import fr.epita.assistants.ping.common.api.response.GetFileResponse;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 
-
 import java.nio.file.StandardCopyOption;
-
 
 @ApplicationScoped
 public class ProjectService {
@@ -35,7 +33,7 @@ public class ProjectService {
     UserRepository userRepository;
     @ConfigProperty(name = "PROJECT_DEFAULT_PATH", defaultValue = "")
     String path;
-            
+
     public void createDirectory(UUID id) {
         if (id == null) {
             System.out.println("PAS D ID"); // On prend pas de risques
@@ -117,7 +115,7 @@ public class ProjectService {
         System.out.println(path + "/" + p);
         System.out.println("=============================");
         File theDir = new File(path + "/" + p);
-        if (!theDir.exists()){
+        if (!theDir.exists()) {
             theDir.mkdirs();
             return true;
         }
@@ -126,7 +124,7 @@ public class ProjectService {
 
     public Boolean moveFolder(String p, String p2) {
         File theDir = new File(path + "/" + p);
-        if (!theDir.exists()){
+        if (!theDir.exists()) {
             return false;
         }
         Path source = Paths.get(path + "/" + p);
@@ -149,15 +147,15 @@ public class ProjectService {
         Stack<Path> del = new Stack<>();
         try {
             s.push(lol);
-            while(!s.isEmpty()) {
+            while (!s.isEmpty()) {
                 Path tmp = s.pop();
                 if (!tmp.toString().equals("/")) // je sais pas car j ai un probleme de VS CODE
                 {
                     del.push(tmp);
                 }
                 if (Files.isDirectory(tmp)) {
-                    Files.list(tmp).forEach(elt -> 
-                        {s.push(elt);
+                    Files.list(tmp).forEach(elt -> {
+                        s.push(elt);
                     });
                 }
             }

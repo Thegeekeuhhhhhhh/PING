@@ -93,7 +93,7 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -143,7 +143,7 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -217,7 +217,7 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "src: " + id.toString() + path.src + " dst: " + id.toString() + path.dst);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
