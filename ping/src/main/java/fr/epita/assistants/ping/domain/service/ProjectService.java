@@ -90,8 +90,8 @@ public class ProjectService {
         delete(id.toString());
     }
 
-    public List<GetFileResponse> ls(UUID id) {
-        Path lol = Paths.get(path + "/" + id.toString());
+    public List<GetFileResponse> ls(UUID id, String p) {
+        Path lol = Paths.get(path + "/" + id.toString() + "/" + p);
         if (!Files.exists(lol)) {
             return new ArrayList<GetFileResponse>();
         }

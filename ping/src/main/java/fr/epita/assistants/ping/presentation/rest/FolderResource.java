@@ -85,7 +85,7 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "GET error attack");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
-        List<GetFileResponse> res = projectService.ls(id);
+        List<GetFileResponse> res = projectService.ls(id, path);
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "all ok !!!");
         return Response.ok(res).status(200).build();
     }
@@ -267,8 +267,8 @@ public class FolderResource {
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
 
-        if (!new File(id.toString() + "/" + path.src).exists()) {
-            return Response.ok(new ErrorInfo("J EXISTE PAS")).status(404).build();
+        if (new File(id.toString() + "/" + path.dst).exists()) {
+            return Response.ok(new ErrorInfo("J EXISTE PAS")).status(409).build();
         }
 
         if (projectService.moveFolder(id.toString() + "/" + path.src, id.toString() + "/" + path.dst) == false) {
