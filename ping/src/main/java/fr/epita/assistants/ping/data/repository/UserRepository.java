@@ -78,8 +78,11 @@ public class UserRepository implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public boolean deleteUser(UUID id) {
+    public Boolean deleteUser(UUID id) {
         UserModel temp = getUser(id);
+        if (temp == null) {
+            return false;
+        }
         for (UserModel u : listAll()) {
             if (u.id.equals(temp.id)) {
                 delete(u);

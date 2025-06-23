@@ -42,7 +42,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
 
     @Transactional
     public List<ProjectModel> getUserProjects(UUID id) {
-        ArrayList<ProjectModel> prout = new ArrayList<ProjectModel>();
+        List<ProjectModel> prout = new ArrayList<ProjectModel>();
         for (ProjectModel um : listAll()) {
             for (UserModel caca : um.members) {
                 if (caca.id.equals(id)) {

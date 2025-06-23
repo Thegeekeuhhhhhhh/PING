@@ -29,7 +29,7 @@ public class UserService {
         return userRepository.getUser(id);
     }
 
-    public boolean deleteUser(UUID id) {
+    public Boolean deleteUser(UUID id) {
         return userRepository.deleteUser(id);
     }
 
