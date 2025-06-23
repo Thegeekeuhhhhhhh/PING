@@ -14,6 +14,7 @@ import fr.epita.assistants.ping.data.repository.UserRepository;
 import jakarta.inject.Inject;
 
 import java.nio.file.StandardCopyOption;
+
 @ApplicationScoped
 public class FilesService {
 
@@ -63,15 +64,17 @@ public class FilesService {
         Path p1 = Paths.get(projectsPath + "/" + id.toString() + "/" + path);
         Path p2 = Paths.get(projectsPath + "/" + id.toString());
         if (p1.equals(p2)) {
+            System.out.println("C EST PAREIL");
             clearFolder(projectsPath + "/" + id.toString() + "/" + path);
         } else {
+            System.out.println("C EST PAS PAREIL");
             deleteFileOrFolder(projectsPath + "/" + id.toString() + "/" + path);
         }
     }
 
     public Boolean moveFile(String p, String p2) {
         File file = new File(projectsPath + "/" + p);
-        if (!file.exists()){
+        if (!file.exists()) {
             return false;
         }
         Path source = Paths.get(projectsPath + "/" + p);

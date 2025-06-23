@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.presentation.rest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import fr.epita.assistants.ping.domain.service.FilesService;
 import fr.epita.assistants.ping.domain.service.ProjectService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.data.model.ProjectModel;
@@ -12,6 +13,7 @@ import fr.epita.assistants.ping.utils.ErrorInfo;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -22,6 +24,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.epita.assistants.ping.utils.Logger;
+
 @Path("/api/projects/{projectId}/folders")
 public class FolderResource {
     @Inject
@@ -33,11 +36,14 @@ public class FolderResource {
     UserService userService;
 
     @Inject
+    FilesService filesService;
+
+    @Inject
     JsonWebToken jwt;
 
     @ConfigProperty(name = "PROJECT_DEFAULT_PATH", defaultValue = "")
     String projectsPath;
-    
+
     @GET
     @Path("/")
     @RolesAllowed({ "admin", "user" }) // 401 + 403
@@ -46,7 +52,7 @@ public class FolderResource {
         if (path == null || path.length() == 0) {
             path = "/";
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", id.toString() + path);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -80,7 +86,7 @@ public class FolderResource {
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
         List<GetFileResponse> res = projectService.ls(id);
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  "all ok !!!");
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "all ok !!!");
         return Response.ok(res).status(200).build();
     }
 
@@ -88,12 +94,12 @@ public class FolderResource {
     @Path("/")
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteFolders(@PathParam("projectId") UUID id,FolderDeleteRequest path) {
+    public Response deleteFolders(@PathParam("projectId") UUID id, FolderDeleteRequest path) {
         if (path == null || path.relativePath == null || path.relativePath.length() == 0) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
-                return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
+            return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.relativePath);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -126,11 +132,18 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "DELETE error attack");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
-        if (projectService.delete(id.toString() + "/" + path.relativePath) == false) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error folder dont exist");
-            return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
-        }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  "all ok !!!");
+
+        System.out.println("miam");
+        filesService.launchDelete(path.relativePath, id);
+
+        // if (projectService.delete(id.toString() + "/" + path.relativePath) == false)
+        // {
+        // Logger.logErrorRequest(jwt.getSubject(),
+        // "/api/projects/{projectId}/folders/", "error folder dont exist");
+        // return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT
+        // ARRETE")).status(400).build();
+        // }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "all ok !!!");
         return Response.ok().status(204).build();
     }
 
@@ -138,12 +151,12 @@ public class FolderResource {
     @Path("/")
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postFolders(@PathParam("projectId") UUID id,FolderDeleteRequest path) {
+    public Response postFolders(@PathParam("projectId") UUID id, FolderDeleteRequest path) {
         if (path == null || path.relativePath == null || path.relativePath.length() == 0) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
-                return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
+            return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  id.toString() + path.relativePath);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -180,7 +193,7 @@ public class FolderResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error folder dont exist");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(409).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  "all ok !!!");
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "all ok !!!");
         return Response.ok().status(201).build();
     }
 
@@ -200,10 +213,11 @@ public class FolderResource {
         // Noah: Une version temporaire voir définition root selon léo
 
         try {
-            /*TODO A modifier important*/ var root = Paths.get(projectsPath + "/" + id.toString() + "/").normalize().toAbsolutePath();
-            var target = root.resolve(path).normalize();
+            /* TODO A modifier important */ var root = Paths.get(projectsPath + "/" + id.toString() + "/").normalize()
+                    .toAbsolutePath();
+            var target = root.resolve(projectsPath + "/" + id.toString() + "/" + path).normalize();
             return !target.startsWith(root);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return true;
         }
     }
@@ -212,12 +226,13 @@ public class FolderResource {
     @Path("/move")
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
-    public Response putFolders(@PathParam("projectId") UUID id,FolderMoveRequest path) {
+    public Response putFolders(@PathParam("projectId") UUID id, FolderMoveRequest path) {
         if (path == null || path.src == null || path.src.length() == 0 || path.dst == null || path.dst.length() == 0) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
-                return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
+            return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "src: " + id.toString() + path.src + " dst: " + id.toString() + path.dst);
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",
+                "src: " + id.toString() + path.src + " dst: " + id.toString() + path.dst);
 
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
@@ -252,11 +267,15 @@ public class FolderResource {
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
 
-        if (projectService.moveFolder(id.toString() + "/" + path.src,id.toString() + "/" +  path.dst) == false) {
+        if (!new File(id.toString() + "/" + path.src).exists()) {
+            return Response.ok(new ErrorInfo("J EXISTE PAS")).status(404).build();
+        }
+
+        if (projectService.moveFolder(id.toString() + "/" + path.src, id.toString() + "/" + path.dst) == false) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error folder dont exist");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(409).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/",  "all ok !!!");
-        return Response.ok().status(201).build();
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "all ok !!!");
+        return Response.ok().status(204).build();
     }
 }

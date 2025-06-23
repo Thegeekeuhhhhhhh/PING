@@ -30,7 +30,7 @@ import fr.epita.assistants.ping.utils.Logger;
 public class FilesResource {
     @Inject
     Logger Logger;
-    
+
     @ConfigProperty(name = "PROJECT_DEFAULT_PATH")
     String projectsPath;
 
@@ -93,10 +93,11 @@ public class FilesResource {
         // Noah: Une version temporaire voir définition root selon léo
 
         try {
-            /*TODO A modifier important*/ var root = Paths.get(projectsPath + "/" + id.toString() + "/").normalize().toAbsolutePath();
-            var target = root.resolve(path).normalize();
+            /* TODO A modifier important */ var root = Paths.get(projectsPath + "/" + id.toString() + "/").normalize()
+                    .toAbsolutePath();
+            var target = root.resolve(projectsPath + "/" + id.toString() + "/" + path).normalize();
             return !target.startsWith(root);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return true;
         }
     }
@@ -117,8 +118,10 @@ public class FilesResource {
 
         // 400, path invalid
         if (isPathInvalid(path)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
-            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
+            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400)
+                    .build();
         }
 
         // 401, -> Deja fait
@@ -126,28 +129,38 @@ public class FilesResource {
         // 404 incongru
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project or the relative path could not be found");
-            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project or the relative path could not be found");
+            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404)
+                    .build();
         }
 
         // 403, check path traversal attack
         if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
                 || isPathTraversalAttack(path, id)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The user is not allowed to access the project or a path traversal attack was detected");
-            return Response.ok(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).status(403).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The user is not allowed to access the project or a path traversal attack was detected");
+            return Response
+                    .ok(new ErrorInfo(
+                            "The user is not allowed to access the project or a path traversal attack was detected"))
+                    .status(403).build();
         }
 
         // 404, Path not found
         if (isPathNotFound(projectsPath + "/" + id.toString() + "/" + path)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project or the relative path could not be found");
-            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project or the relative path could not be found");
+            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404)
+                    .build();
         }
 
         byte[] res = filesService.getFileContent(projectsPath + "/" + id.toString() + "/" + path);
         if (res == null) {
             // 404 i guess ?
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project or the relative path could not be found");
-            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project or the relative path could not be found");
+            return Response.ok(new ErrorInfo("The project or the relative path could not be found")).status(404)
+                    .build();
         }
 
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "Content of the file");
@@ -162,7 +175,8 @@ public class FilesResource {
 
         // 400, path invalid
         if (deleteFileRequest == null || isPathInvalid(deleteFileRequest.relativePath)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
 
@@ -171,20 +185,26 @@ public class FilesResource {
         // 404 incongru
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project or the file could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project or the file could not be found");
             return Response.ok(new ErrorInfo("The project or the file could not be found")).status(404).build();
         }
 
         // 403, check path traversal attack
         if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
                 || isPathTraversalAttack(deleteFileRequest.relativePath, id)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The user is not allowed to access the project or a path traversal attack was detected");
-            return Response.ok(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).status(403).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The user is not allowed to access the project or a path traversal attack was detected");
+            return Response
+                    .ok(new ErrorInfo(
+                            "The user is not allowed to access the project or a path traversal attack was detected"))
+                    .status(403).build();
         }
 
         // 404, Path not found
         if (isPathNotFound(projectsPath + "/" + id.toString() + "/" + deleteFileRequest.relativePath)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project or the file could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project or the file could not be found");
             return Response.ok(new ErrorInfo("The project or the file could not be found")).status(404).build();
         }
 
@@ -202,8 +222,10 @@ public class FilesResource {
 
         // 400, path invalid
         if (createFileRequest == null || isPathInvalid(createFileRequest.relativePath)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
-            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
+            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400)
+                    .build();
         }
 
         // 401, -> Deja fait
@@ -211,15 +233,20 @@ public class FilesResource {
         // 404 incongru
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project could not be found");
             return Response.ok(new ErrorInfo("The project could not be found")).status(404).build();
         }
 
         // 403, check path traversal attack
         if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
                 || isPathTraversalAttack(createFileRequest.relativePath, id)) {
-                    Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The user is not allowed to access the project or a path traversal attack was detected");
-            return Response.ok(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).status(403).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The user is not allowed to access the project or a path traversal attack was detected");
+            return Response
+                    .ok(new ErrorInfo(
+                            "The user is not allowed to access the project or a path traversal attack was detected"))
+                    .status(403).build();
         }
 
         // 409, file exists
@@ -239,8 +266,8 @@ public class FilesResource {
                 return Response.ok(new ErrorInfo("The file already exists")).status(409).build();
             }
         } catch (Exception e) {
-                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "Server problem youstone");
-                return Response.ok(new ErrorInfo("Internal Error")).status(400).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "Server problem youstone");
+            return Response.ok(new ErrorInfo("Internal Error")).status(400).build();
         }
 
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The file was created");
@@ -255,7 +282,8 @@ public class FilesResource {
 
         // 400, path invalid
         if (moveFileRequest == null || isPathInvalid(moveFileRequest.src) || isPathInvalid(moveFileRequest.dst)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
 
@@ -268,19 +296,21 @@ public class FilesResource {
         // 404 incongru
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project could not be found");
             return Response.ok(new ErrorInfo("The project could not be found")).status(404).build();
         }
 
         // 403, check path traversal attack
         if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
                 || isPathTraversalAttack(moveFileRequest.src, id) || isPathTraversalAttack(moveFileRequest.dst, id)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The user is not allowed to access the project or a path traversal attack was detected");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The user is not allowed to access the project or a path traversal attack was detected");
             return Response.ok(new ErrorInfo("IMPOSTOR OR HACKER")).status(403).build();
         }
 
         // 409, file exists
-        if (doFileAlreadyExists(moveFileRequest.dst)) {
+        if (doFileAlreadyExists(projectsPath + "/" + id.toString() + "/" + moveFileRequest.dst)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The file already exists");
             return Response.ok(new ErrorInfo("The file already exists")).status(409).build();
         }
@@ -292,15 +322,18 @@ public class FilesResource {
 
         if (!srcFile.exists()) {
             Logger.error("Source not found");
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project could not be found");
             return Response.ok(new ErrorInfo("The project could not be found")).status(404).build();
         }
 
         dstFile.getParentFile().mkdirs(); // Crée les dossiers nécessaires
         boolean success = srcFile.renameTo(dstFile);
         if (!success) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
-            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
+            return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400)
+                    .build();
         }
 
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The file was created");
@@ -318,13 +351,15 @@ public class FilesResource {
         try {
             content = inputStream.readAllBytes();
         } catch (Exception e) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
 
         // 400, path invalid
         if (path == null || isPathInvalid(path)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Fais un effort brozer 2")).status(400).build();
         }
 
@@ -337,15 +372,20 @@ public class FilesResource {
         // 404 incongru
         ProjectModel p = projectService.getProject(id);
         if (p == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The project could not be found");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The project could not be found");
             return Response.ok(new ErrorInfo("The project could not be found")).status(404).build();
         }
 
         // 403, check path traversal attack
         if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
                 || isPathTraversalAttack(path, id)) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The user is not allowed to access the project or a path traversal attack was detected");
-            return Response.ok(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).status(403).build();
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The user is not allowed to access the project or a path traversal attack was detected");
+            return Response
+                    .ok(new ErrorInfo(
+                            "The user is not allowed to access the project or a path traversal attack was detected"))
+                    .status(403).build();
         }
 
         // TODO / DONE NOAH
@@ -355,7 +395,8 @@ public class FilesResource {
             file.getParentFile().mkdirs(); // Crée les dossiers si besoin
             java.nio.file.Files.write(file.toPath(), content);
         } catch (Exception e) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The relative path is invalid (null or empty for example)");
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                    "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Could not write file")).status(400).build();
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "The file was created");

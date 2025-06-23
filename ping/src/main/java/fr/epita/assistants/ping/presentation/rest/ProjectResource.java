@@ -88,6 +88,9 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
         Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
+        if (request == null || request.name == null || request.name.length() == 0) {
+            return Response.ok().status(400).build();
+        }
         UUID id = UUID.fromString(jwt.getSubject());
         UserModel owner = userService.getUser(id);
 
@@ -137,7 +140,8 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("Nan la c'est abuse en vrai"))
                     .status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", id.toString() + updateProjectRequest.name + " " + updateProjectRequest.newOwnerId.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}",
+                id.toString() + updateProjectRequest.name + " " + updateProjectRequest.newOwnerId.toString());
 
         String name = updateProjectRequest.name;
         UUID newId = updateProjectRequest.newOwnerId;
@@ -344,7 +348,8 @@ public class ProjectResource {
             liststr += " ";
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec",
-                id.toString() + " " + executeFeatureRequest.feature + " " + executeFeatureRequest.command + " " + liststr);
+                id.toString() + " " + executeFeatureRequest.feature + " " + executeFeatureRequest.command + " "
+                        + liststr);
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {

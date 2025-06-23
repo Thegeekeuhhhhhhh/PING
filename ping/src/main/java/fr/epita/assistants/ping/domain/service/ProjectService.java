@@ -66,7 +66,7 @@ public class ProjectService {
         for (UserModel temp : userRepository.listUsers()) {
             if (temp.id.equals(owner.id)) {
                 var tmp = projectRepository.addProject(name, temp, path);
-                createDirectory(projectRepository.getProject_by_name(name).id);
+                createDirectory(tmp.id);
                 return tmp;
             }
         }
@@ -101,7 +101,8 @@ public class ProjectService {
         try {
             Stream<Path> stream = Files.list(lol);
             stream.forEach(elt -> {
-                res.add(new GetFileResponse(elt.getFileName().toString(), elt.toString(), Files.isDirectory(lol)));
+                res.add(new GetFileResponse(elt.getFileName().toString(), elt.toString(),
+                        Files.isDirectory(Paths.get(elt.toString()))));
             });
         } catch (IOException e) {
             System.out.println("WTF CA MARCHE PLUS");
