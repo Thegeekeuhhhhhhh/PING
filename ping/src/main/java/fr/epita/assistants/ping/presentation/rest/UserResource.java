@@ -82,7 +82,8 @@ public class UserResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/user", "error there have no body or the body is incorrect");
             return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(401).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/user/", userRequest.toString());
+
+        Logger.logRequest(jwt.getSubject(), "/api/user/", userRequest.login + " " + userRequest.password + " " + userRequest.isAdmin);
         boolean legit = false;
         String first = "";
         String last = "";
@@ -153,7 +154,7 @@ public class UserResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/user/login", "error on body");
             return Response.ok(new ErrorInfo("LEO VRAIMENT TU FAIT CA")).status(400).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/user/login", loginRequest.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/user/login", loginRequest.login + " " + loginRequest.password);
         var a = userService.checkUser(loginRequest.login, loginRequest.password);
         if (a == null) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/user/login", "error check user null");
@@ -225,7 +226,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response updateUser(@PathParam("id") UUID id, UpdateRequest updateRequest) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + updateRequest.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + updateRequest.password + " " + updateRequest.displayName + " " + updateRequest.avatar);
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -270,7 +271,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response GetUser(@PathParam("id") UUID id) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " + id);
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "GET " + id.toString());
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -301,7 +302,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" }) // 401 + 403
     public Response DeleteUser(@PathParam("id") UUID id) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " + id);
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "DELETE " + id.toString());
         List<ProjectModel> list = projectService.getUserProjects(id);
         if (list.size() > 0) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/user/{id}", "GEt " + "error no user");

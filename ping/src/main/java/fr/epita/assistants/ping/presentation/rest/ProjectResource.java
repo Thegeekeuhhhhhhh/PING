@@ -87,7 +87,7 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
-        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
         UUID id = UUID.fromString(jwt.getSubject());
         UserModel owner = userService.getUser(id);
 
@@ -137,8 +137,7 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("Nan la c'est abuse en vrai"))
                     .status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}",
-                "PUT " + id.toString() + updateProjectRequest.toString());
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", id.toString() + updateProjectRequest.name + " " + updateProjectRequest.newOwnerId.toString());
 
         String name = updateProjectRequest.name;
         UUID newId = updateProjectRequest.newOwnerId;
@@ -284,7 +283,7 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/add-user",
-                id.toString() + addMemberToProjectRequest.toString());
+                id.toString() + addMemberToProjectRequest.userId.toString());
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
@@ -339,8 +338,13 @@ public class ProjectResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error bodu incorrect");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        String liststr = "";
+        for (String s : executeFeatureRequest.params) {
+            liststr += s;
+            liststr += " ";
+        }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec",
-                id.toString() + executeFeatureRequest.toString());
+                id.toString() + " " + executeFeatureRequest.feature + " " + executeFeatureRequest.command + " " + liststr);
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
@@ -388,7 +392,7 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/remove-user",
-                id.toString() + addMemberToProjectRequest.toString());
+                id.toString() + addMemberToProjectRequest.userId.toString());
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {
