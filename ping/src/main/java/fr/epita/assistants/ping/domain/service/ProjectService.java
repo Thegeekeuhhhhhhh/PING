@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
-
+import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -21,6 +21,8 @@ import fr.epita.assistants.ping.common.api.response.GetFileResponse;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 
+import java.nio.file.StandardCopyOption;
+
 @ApplicationScoped
 public class ProjectService {
 
@@ -29,9 +31,8 @@ public class ProjectService {
 
     @Inject
     UserRepository userRepository;
-
-    // @ConfigProperty(name = "PROJECT_DEFAULT_PATH")
-    String path = "/tmp/projects";
+    @ConfigProperty(name = "PROJECT_DEFAULT_PATH", defaultValue = "")
+    String path;
 
     public void createDirectory(UUID id) {
         if (id == null) {
@@ -62,10 +63,11 @@ public class ProjectService {
     }
 
     public ProjectModel addProject(String name, UserModel owner) {
-        createDirectory(owner.id);
         for (UserModel temp : userRepository.listUsers()) {
             if (temp.id.equals(owner.id)) {
-                return projectRepository.addProject(name, temp, path);
+                var tmp = projectRepository.addProject(name, temp, path);
+                createDirectory(projectRepository.getProject_by_name(name).id);
+                return tmp;
             }
         }
         return null;
@@ -85,12 +87,13 @@ public class ProjectService {
 
     public void deleteProject(UUID id) {
         projectRepository.deleteProject(id);
+        delete(id.toString());
     }
 
     public List<GetFileResponse> ls(UUID id) {
         Path lol = Paths.get(path + "/" + id.toString());
         if (!Files.exists(lol)) {
-            return null;
+            return new ArrayList<GetFileResponse>();
         }
 
         ArrayList<GetFileResponse> res = new ArrayList<GetFileResponse>();
@@ -105,6 +108,66 @@ public class ProjectService {
         }
 
         return res;
+    }
+
+    public Boolean createFolder(String p) {
+        System.out.println("=============================");
+        System.out.println(path + "/" + p);
+        System.out.println("=============================");
+        File theDir = new File(path + "/" + p);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean moveFolder(String p, String p2) {
+        File theDir = new File(path + "/" + p);
+        if (!theDir.exists()) {
+            return false;
+        }
+        Path source = Paths.get(path + "/" + p);
+        Path target = Paths.get(path + "/" + p2);
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean delete(String p) {
+        Path lol = Paths.get(path + "/" + p);
+        if (!Files.exists(lol)) {
+            return false;
+        }
+
+        Stack<Path> s = new Stack<>();
+        Stack<Path> del = new Stack<>();
+        try {
+            s.push(lol);
+            while (!s.isEmpty()) {
+                Path tmp = s.pop();
+                if (!tmp.toString().equals("/")) // je sais pas car j ai un probleme de VS CODE
+                {
+                    del.push(tmp);
+                }
+                if (Files.isDirectory(tmp)) {
+                    Files.list(tmp).forEach(elt -> {
+                        s.push(elt);
+                    });
+                }
+            }
+            while (!del.isEmpty()) {
+                Path tmp = del.pop();
+                Files.delete(tmp);
+            }
+        } catch (IOException e) {
+            System.out.println("WTF CA MARCHE PLUS");
+        }
+
+        return true;
     }
 
     public void addUserToProject(UUID id, UserModel user) {

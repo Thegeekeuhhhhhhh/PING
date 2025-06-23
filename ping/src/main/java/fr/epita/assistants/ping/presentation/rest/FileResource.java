@@ -36,6 +36,8 @@ import fr.epita.assistants.ping.utils.Logger;
 
 @Path("/api/projects/{projectId}/files")
 public class FileResource {
+    @Inject
+    Logger Logger;
 
     @Inject
     ProjectService projectService;

@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.common.api.response;
+package fr.epita.assistants.ping.common.api.request;
 
 import java.util.UUID;
 
@@ -11,8 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class MemberResponse {
-    public UUID id;
-    public String displayName;
-    public String avatar;
+public class MoveFileRequest {
+    public String src;
+    public String dst;
 }

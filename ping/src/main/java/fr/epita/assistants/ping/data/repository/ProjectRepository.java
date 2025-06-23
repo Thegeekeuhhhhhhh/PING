@@ -30,6 +30,17 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     }
 
     @Transactional
+    public ProjectModel getProject_by_name(String name) {
+        List<ProjectModel> temp = listAll();
+        for (ProjectModel p : temp) {
+            if (p.name.equals(name)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    @Transactional
     public List<ProjectModel> getUserProjects(UUID id) {
         ArrayList<ProjectModel> prout = new ArrayList<ProjectModel>();
         for (ProjectModel um : listAll()) {
