@@ -140,14 +140,14 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("Nan la c'est abuse en vrai"))
                     .status(404).build();
         }
-        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}",
-                id.toString() + updateProjectRequest.name + " " + updateProjectRequest.newOwnerId.toString());
-
         String name = updateProjectRequest.name;
         UUID newId = updateProjectRequest.newOwnerId;
         if (name == null) {
             name = "";
         }
+
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{id}",
+                id.toString() + updateProjectRequest.name + " " + updateProjectRequest.newOwnerId);
 
         String grp = "";
         for (String tmp : jwt.getGroups()) {

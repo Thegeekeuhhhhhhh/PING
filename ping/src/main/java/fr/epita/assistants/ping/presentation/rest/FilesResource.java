@@ -124,6 +124,9 @@ public class FilesResource {
                     .build();
         }
 
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                id.toString() + " src: " + path);
+
         // 401, -> Deja fait
 
         // 404 incongru
@@ -180,6 +183,9 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
 
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                id.toString() + " src: " + deleteFileRequest.relativePath);
+
         // 401, -> Deja fait
 
         // 404 incongru
@@ -227,6 +233,9 @@ public class FilesResource {
             return Response.ok(new ErrorInfo("The relative path is invalid (null or empty for example)")).status(400)
                     .build();
         }
+
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
+                id.toString() + " src: " + createFileRequest.relativePath);
 
         // 401, -> Deja fait
 
@@ -279,13 +288,15 @@ public class FilesResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response moveFile(@PathParam("projectId") UUID id, MoveFileRequest moveFileRequest) {
-
         // 400, path invalid
         if (moveFileRequest == null || isPathInvalid(moveFileRequest.src) || isPathInvalid(moveFileRequest.dst)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
                     "The relative path is invalid (null or empty for example)");
             return Response.ok(new ErrorInfo("Fais un effort brozer")).status(400).build();
         }
+
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/move/",
+                id.toString() + " src: " + moveFileRequest.src + " dst: " + moveFileRequest.dst);
 
         // TODO
         // Je sais pas si on met le chemin relatif ou absolu dans la request
@@ -347,6 +358,10 @@ public class FilesResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response uploadFile(@PathParam("projectId") UUID id, @QueryParam("path") String path,
             InputStream inputStream) {
+
+        Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/files/upload/",
+                id.toString() + " " + path);
+
         byte[] content;
         try {
             content = inputStream.readAllBytes();
