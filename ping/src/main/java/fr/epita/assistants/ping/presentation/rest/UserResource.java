@@ -83,7 +83,8 @@ public class UserResource {
             return Response.ok(new ErrorInfo("Caca et pipi sont sur un bateau")).status(401).build();
         }
 
-        Logger.logRequest(jwt.getSubject(), "/api/user/", userRequest.login + " " + userRequest.password + " " + userRequest.isAdmin);
+        Logger.logRequest(jwt.getSubject(), "/api/user/",
+                userRequest.login + " " + userRequest.password + " " + userRequest.isAdmin);
         boolean legit = false;
         String first = "";
         String last = "";
@@ -226,7 +227,8 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response updateUser(@PathParam("id") UUID id, UpdateRequest updateRequest) {
-        Logger.logRequest(jwt.getSubject(), "/api/user/{id}", "PUT " + updateRequest.password + " " + updateRequest.displayName + " " + updateRequest.avatar);
+        Logger.logRequest(jwt.getSubject(), "/api/user/{id}",
+                "PUT " + updateRequest.password + " " + updateRequest.displayName + " " + updateRequest.avatar);
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -246,13 +248,13 @@ public class UserResource {
         String avatar = updateRequest.avatar;
         String passwd = updateRequest.password;
 
-        if (dpname == null) {
+        if (dpname == null || dpname.isBlank()) {
             dpname = "";
         }
-        if (avatar == null) {
+        if (avatar == null || avatar.isBlank()) {
             avatar = "";
         }
-        if (passwd == null) {
+        if (passwd == null || passwd.isBlank()) {
             passwd = "";
         }
 
