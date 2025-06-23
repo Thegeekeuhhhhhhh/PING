@@ -206,8 +206,9 @@ public class ProjectResource {
             String idstr = jwt.getSubject();
             UUID realId = UUID.fromString(idstr);
             Boolean ok = false;
-            for (ProjectModel temp : projectService.getProjects()) {
-                if (temp.owner.id.equals(realId)) {
+            ProjectModel p = projectService.getProject(id);
+            for (UserModel temp : p.members) {
+                if (temp.id.equals(realId)) {
                     ok = true;
                     break;
                 }
@@ -422,10 +423,13 @@ public class ProjectResource {
 
         if (project.owner.id.equals(newMember.id)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "error id equals");
-            return Response.ok(new ErrorInfo("On va pas kick le chef du groupe en vrai")).status(409).build();
+            return Response.ok(new ErrorInfo("On va pas kick le chef du groupe en vrai")).status(403).build();
         }
 
-        projectService.deleteUserFromProject(id, newMember);
+        if (!projectService.deleteUserFromProject(id, newMember)) {
+            // Pas trouve
+            return Response.ok(new ErrorInfo("NAN YUKI")).status(404).build();
+        }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/remove-user", "all ok !!!");
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }

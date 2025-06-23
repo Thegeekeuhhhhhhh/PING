@@ -175,7 +175,7 @@ public class ProjectService {
         projectRepository.addUserToProject(id, user);
     }
 
-    public void deleteUserFromProject(UUID id, UserModel user) {
-        projectRepository.deleteUserFromProject(id, user);
+    public Boolean deleteUserFromProject(UUID id, UserModel user) {
+        return projectRepository.deleteUserFromProject(id, user);
     }
 }
