@@ -87,10 +87,10 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
-        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
         if (request == null || request.name == null || request.name.length() == 0) {
             return Response.ok().status(400).build();
         }
+        Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
         UUID id = UUID.fromString(jwt.getSubject());
         UserModel owner = userService.getUser(id);
 
