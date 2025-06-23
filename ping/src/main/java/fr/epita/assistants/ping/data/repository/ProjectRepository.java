@@ -115,6 +115,15 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @Transactional
     public void deleteUserFromProject(UUID id, UserModel user) {
         ProjectModel p = getProject(id);
-        p.members.remove(user);
+        System.out.println(p.members.size());
+        for (UserModel t : p.members) {
+            if (t.id.equals(user.id)) {
+                p.members.remove(t);
+                break;
+            }
+        }
+        System.out.println(p.members.size());
+
+        persist(p);
     }
 }

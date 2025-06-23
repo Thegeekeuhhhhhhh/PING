@@ -242,6 +242,13 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteProject(@PathParam("id") UUID id) {
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + id.toString());
+
+        ProjectModel project = projectService.getProject(id);
+        if (project == null) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "error project null");
+            return Response.ok(new ErrorInfo("Y'a rien la")).status(404).build();
+        }
+
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;
@@ -251,25 +258,10 @@ public class ProjectResource {
         if (grp.equals("user")) {
             String idstr = jwt.getSubject();
             UUID realId = UUID.fromString(idstr);
-            Boolean ok = false;
-            for (ProjectModel temp : projectService.getProjects()) {
-                for (UserModel u : temp.members) {
-                    if (u.id.equals(realId)) {
-                        ok = true;
-                        break;
-                    }
-                }
-            }
-            if (!ok) {
+            if (!realId.equals(project.owner.id)) {
                 Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "error ok false");
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
-        }
-
-        ProjectModel project = projectService.getProject(id);
-        if (project == null) {
-            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "DELETE " + "error project null");
-            return Response.ok(new ErrorInfo("Y'a rien la")).status(404).build();
         }
 
         projectService.deleteProject(id);
