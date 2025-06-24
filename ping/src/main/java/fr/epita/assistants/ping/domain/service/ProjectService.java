@@ -92,6 +92,7 @@ public class ProjectService {
 
     public List<GetFileResponse> ls(UUID id, String p) {
         Path lol = Paths.get(path + "/" + id.toString() + "/" + p);
+        Path root = Paths.get(path + "/" + id.toString() + "/");
         if (!Files.exists(lol)) {
             return new ArrayList<GetFileResponse>();
         }
@@ -101,8 +102,9 @@ public class ProjectService {
         try {
             Stream<Path> stream = Files.list(lol);
             stream.forEach(elt -> {
-                res.add(new GetFileResponse(elt.getFileName().toString(), elt.toString(),
-                        Files.isDirectory(Paths.get(elt.getFileName().toString()))));
+                String[] test = elt.toString().split(id.toString());
+                res.add(new GetFileResponse(elt.getFileName().toString(), test[1].substring(1),
+                        Files.isDirectory(Paths.get(elt.toString()))));
             });
         } catch (IOException e) {
             System.out.println("WTF CA MARCHE PLUS");
