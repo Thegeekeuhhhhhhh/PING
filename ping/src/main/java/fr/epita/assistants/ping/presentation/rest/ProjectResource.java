@@ -29,8 +29,10 @@ import jakarta.inject.Inject;
 
 import java.util.*;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.io.File;
 import java.time.*;
 
 import fr.epita.assistants.ping.utils.Logger;
@@ -48,7 +50,10 @@ public class ProjectResource {
     @Inject
     JsonWebToken jwt;
 
-    private static final String PROJECT_DEFAULT_PATH = System.getenv("PROJECT_DEFAULT_PATH");
+    @ConfigProperty(name = "PROJECT_DEFAULT_PATH", defaultValue = "")
+    String projectsPath;
+    // private static final String PROJECT_DEFAULT_PATH =
+    // System.getenv("PROJECT_DEFAULT_PATH");
 
     @GET
     @Path("/")
@@ -138,7 +143,7 @@ public class ProjectResource {
                 || (updateProjectRequest.name == null && updateProjectRequest.newOwnerId == null)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error body is incorrect");
             return Response.ok(new ErrorInfo("Nan la c'est abuse en vrai"))
-                    .status(404).build();
+                    .status(400).build();
         }
         String name = updateProjectRequest.name;
         UUID newId = updateProjectRequest.newOwnerId;
@@ -159,11 +164,9 @@ public class ProjectResource {
             String idstr = jwt.getSubject();
             UUID realId = UUID.fromString(idstr);
             Boolean ok = false;
-            for (ProjectModel temp : projectService.getProjects()) {
-                if (temp.owner.id.equals(realId)) {
-                    ok = true;
-                    break;
-                }
+            ProjectModel p = projectService.getProject(id);
+            if (p.owner.id.equals(realId)) {
+                ok = true;
             }
             if (!ok) {
                 Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error not ok");
@@ -331,14 +334,25 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response executeFeature(@PathParam("id") UUID id, ExecuteFeatureRequest executeFeatureRequest) {
         if (executeFeatureRequest == null || executeFeatureRequest.feature == null
-                || executeFeatureRequest.command == null || executeFeatureRequest.params == null) {
+                || executeFeatureRequest.command == null || !executeFeatureRequest.feature.equals("git")) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "error bodu incorrect");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        if (!executeFeatureRequest.command.equals("init") && !executeFeatureRequest.command.equals("commit")
+                && !executeFeatureRequest.command.equals("add")) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "TU ME DIS N IMPORTE QUOI");
+            return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
+        }
+        List<String> fin = new ArrayList<String>();
+        fin.add(executeFeatureRequest.feature);
+        fin.add(executeFeatureRequest.command);
         String liststr = "";
-        for (String s : executeFeatureRequest.params) {
-            liststr += s;
-            liststr += " ";
+        if (executeFeatureRequest.params != null) {
+            for (String s : executeFeatureRequest.params) {
+                liststr += s;
+                liststr += " ";
+                fin.add(s);
+            }
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec",
                 id.toString() + " " + executeFeatureRequest.feature + " " + executeFeatureRequest.command + " "
@@ -374,8 +388,22 @@ public class ProjectResource {
             return Response.ok(new ErrorInfo("Je t'ai pas trouve gros...")).status(404).build();
         }
 
-        // TODO
         // Faire le gros du travail
+        ProcessBuilder pbBuilder = new ProcessBuilder().command(fin)
+                .directory(new File(projectsPath + "/" + id.toString() + "/"));
+        try {
+            Process process = pbBuilder.start();
+            int output = process.waitFor();
+            if (output != 0) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec",
+                        "J AI PAS PU RUN TA COMMANDE NOEUILLE");
+                return Response.ok(new ErrorInfo("PROUT")).status(400).build();
+            }
+        } catch (Exception e) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec", "JE VIENS D EXPLOSER");
+            return Response.ok(new ErrorInfo("MACRON")).status(400).build();
+        }
+
         Logger.logRequest(jwt.getSubject(), "/api/projects/{id}/exec", "all ok !!!");
         return Response.ok(new SimpleMessageResponse("Yo la team")).status(204).build();
     }
