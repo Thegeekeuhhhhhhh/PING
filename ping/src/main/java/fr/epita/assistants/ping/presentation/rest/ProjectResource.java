@@ -400,13 +400,13 @@ public class ProjectResource {
         try {
             Process process = pbBuilder.start();
             int output = process.waitFor();
-            /*
-             * if (output != 0) {
-             * Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec",
-             * "J AI PAS PU RUN TA COMMANDE NOEUILLE");
-             * return Response.ok(new ErrorInfo("PROUT")).status(400).build();
-             * }
-             */
+
+            if (output != 0) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec",
+                        "J AI PAS PU RUN TA COMMANDE NOEUILLE");
+                return Response.ok(new ErrorInfo("PROUT")).status(400).build();
+            }
+
         } catch (Exception e) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec", "JE VIENS D EXPLOSER");
             return Response.ok(new ErrorInfo("MACRON")).status(400).build();

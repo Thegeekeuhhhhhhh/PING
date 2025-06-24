@@ -102,7 +102,7 @@ public class FolderResource {
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
-        if (p == null) {
+        if (p == null || !(new File(projectsPath + "/" + id.toString() + "/" + path.relativePath).exists())) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "DELETET error p null");
             return Response.ok(new ErrorInfo("BAKA")).status(404).build();
         }
