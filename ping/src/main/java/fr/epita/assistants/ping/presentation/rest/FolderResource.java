@@ -235,7 +235,7 @@ public class FolderResource {
                 "src: " + id.toString() + path.src + " dst: " + id.toString() + path.dst);
 
         ProjectModel p = projectService.getProject(id);
-        if (p == null) {
+        if (p == null || !(new File(projectsPath + "/" + id.toString() + "/" + path.src).exists())) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error p null");
             return Response.ok(new ErrorInfo("BAKA")).status(404).build();
         }
@@ -267,12 +267,13 @@ public class FolderResource {
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
 
-        if (new File(id.toString() + "/" + path.dst).exists()) {
+        if (new File(projectsPath + "/" + id.toString() + "/" + path.dst).exists()) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "TU M EMMENES OU GROS");
             return Response.ok(new ErrorInfo("J EXISTE PAS")).status(409).build();
         }
 
-        if (projectService.moveFolder(id.toString() + "/" + path.src, id.toString() + "/" + path.dst) == false) {
+        if (projectService.moveFolder(projectsPath + "/" + id.toString() + "/" + path.src,
+                projectsPath + "/" + id.toString() + "/" + path.dst) == false) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error folder dont exist");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(409).build();
         }
