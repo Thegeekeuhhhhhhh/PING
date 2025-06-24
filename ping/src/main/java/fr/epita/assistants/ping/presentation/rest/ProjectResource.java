@@ -166,6 +166,11 @@ public class ProjectResource {
             UUID realId = UUID.fromString(idstr);
             Boolean ok = false;
             ProjectModel p = projectService.getProject(id);
+            if (p == null) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}", "PUT " + "error not ok");
+                return Response.ok(new ErrorInfo("ET SI TU N EXISTAIS PAS, DIS MOI POURQUOI J EXISTERAIS")).status(404)
+                        .build();
+            }
             if (p.owner.id.equals(realId)) {
                 ok = true;
             }

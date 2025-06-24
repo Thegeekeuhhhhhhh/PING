@@ -95,14 +95,18 @@ public class FolderResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteFolders(@PathParam("projectId") UUID id, FolderDeleteRequest path) {
-        if (path == null || path.relativePath == null || path.relativePath.length() == 0) {
+        if (path == null || path.relativePath == null) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "error path null or empty");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(400).build();
+        }
+        String chemin = path.relativePath;
+        if (chemin.isBlank()) {
+            chemin = "/";
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", id.toString() + path.relativePath);
 
         ProjectModel p = projectService.getProject(id);
-        if (p == null || !(new File(projectsPath + "/" + id.toString() + "/" + path.relativePath).exists())) {
+        if (p == null || !(new File(projectsPath + "/" + id.toString() + "/" + chemin).exists())) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "DELETET error p null");
             return Response.ok(new ErrorInfo("BAKA")).status(404).build();
         }
@@ -128,13 +132,13 @@ public class FolderResource {
                 return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE")).status(403).build();
             }
         }
-        if (isPathTraversalAttack(path.relativePath, id)) {
+        if (isPathTraversalAttack(chemin, id)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "DELETE error attack");
             return Response.ok(new ErrorInfo("TU N'AS PAS LE DROIT ARRETE, de vouloir faire caca")).status(403).build();
         }
 
         System.out.println("miam");
-        filesService.launchDelete(path.relativePath, id);
+        filesService.launchDelete(chemin, id);
 
         // if (projectService.delete(id.toString() + "/" + path.relativePath) == false)
         // {
@@ -269,7 +273,7 @@ public class FolderResource {
 
         if (new File(projectsPath + "/" + id.toString() + "/" + path.dst).exists()) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "TU M EMMENES OU GROS");
-            return Response.ok(new ErrorInfo("J EXISTE PAS")).status(409).build();
+            return Response.ok(new ErrorInfo("J EXISTE DEJA")).status(409).build();
         }
 
         if (projectService.moveFolder(projectsPath + "/" + id.toString() + "/" + path.src,

@@ -123,7 +123,7 @@ public class ProjectService {
     }
 
     public Boolean moveFolder(String p, String p2) {
-        File theDir = new File(p);
+        File theDir = new File(p2);
         if (theDir.exists()) {
             return false;
         }
