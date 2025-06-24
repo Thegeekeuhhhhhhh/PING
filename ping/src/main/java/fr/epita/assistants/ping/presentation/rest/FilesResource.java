@@ -10,6 +10,7 @@ import fr.epita.assistants.ping.common.api.request.CreateFileRequest;
 import fr.epita.assistants.ping.common.api.request.DeleteFileRequest;
 import fr.epita.assistants.ping.common.api.request.MoveFileRequest;
 import fr.epita.assistants.ping.data.model.ProjectModel;
+import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.common.api.response.SimpleMessageResponse;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import jakarta.annotation.security.RolesAllowed;
@@ -248,8 +249,29 @@ public class FilesResource {
         }
 
         // 403, check path traversal attack
-        if (isUserNotAllowed(p, jwt.getGroups(), UUID.fromString(jwt.getSubject()))
-                || isPathTraversalAttack(createFileRequest.relativePath, id)) {
+        String grp = "";
+        for (String tmp : jwt.getGroups()) {
+            grp = tmp;
+            break;
+        }
+
+        UUID realId = UUID.fromString(jwt.getSubject());
+
+        if (grp.equals("user")) {
+            Boolean ok = false;
+            for (UserModel m : p.members) {
+                if (m.id.equals(realId)) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (!ok) {
+                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/", "AAAAAAAAAAAAAAA");
+                return Response.ok(new ErrorInfo("AAAAAAAAAAAAAAAAAAA")).status(403).build();
+            }
+        }
+
+        if (isPathTraversalAttack(createFileRequest.relativePath, id)) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/files/",
                     "The user is not allowed to access the project or a path traversal attack was detected");
             return Response
