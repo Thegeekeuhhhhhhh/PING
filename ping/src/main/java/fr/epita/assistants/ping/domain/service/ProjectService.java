@@ -79,9 +79,6 @@ public class ProjectService {
 
     public ProjectModel updateProject(String name, UUID oldId, UUID newId) {
         ProjectModel temp = projectRepository.updateProject(name, oldId, newId);
-        if (temp == null) {
-            return null;
-        }
         return temp;
     }
 

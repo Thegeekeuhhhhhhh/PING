@@ -79,23 +79,22 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
 
         // Check si le nouveau proprio fait partie des membres
         Boolean ok = false;
-        for (UserModel x : p.members) {
-            System.out.println(x.displayName);
-            if (x.id.equals(newId)) {
-                if (name.length() > 0) {
-                    p.name = name;
+        if (newId != null) {
+            for (UserModel x : p.members) {
+                if (x.id.equals(newId)) {
+                    if (newId != null) {
+                        p.owner = x;
+                    }
+                    ok = true;
+                    break;
                 }
-                if (newId != null) {
-                    p.owner = x;
-                }
-                ok = true;
-                break;
             }
-
+            if (!ok) {
+                return null;
+            }
         }
-        if (!ok) {
-            System.out.println("PTDRRRR");
-            return null;
+        if (name.length() > 0 && !name.isBlank()) {
+            p.name = name;
         }
         return p;
     }

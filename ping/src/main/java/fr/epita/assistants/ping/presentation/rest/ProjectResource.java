@@ -93,7 +93,8 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
         if (request == null || request.name == null || request.name.length() == 0 || request.name.isBlank()) {
-            return Response.ok().status(400).build();
+            return Response.ok(new ErrorInfo("yo dsl, Nathalie vient de m'appeler, ca va etre chaud la...")).status(400)
+                    .build();
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
         UUID id = UUID.fromString(jwt.getSubject());
