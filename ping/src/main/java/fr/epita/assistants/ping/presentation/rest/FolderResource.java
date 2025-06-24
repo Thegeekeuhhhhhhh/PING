@@ -268,6 +268,7 @@ public class FolderResource {
         }
 
         if (new File(id.toString() + "/" + path.dst).exists()) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{projectId}/folders/", "TU M EMMENES OU GROS");
             return Response.ok(new ErrorInfo("J EXISTE PAS")).status(409).build();
         }
 

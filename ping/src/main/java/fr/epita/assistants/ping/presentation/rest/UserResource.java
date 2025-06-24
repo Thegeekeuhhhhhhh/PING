@@ -228,7 +228,8 @@ public class UserResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403.5
     public Response updateUser(@PathParam("id") UUID id, UpdateRequest updateRequest) {
         Logger.logRequest(jwt.getSubject(), "/api/user/{id}",
-                "PUT " + updateRequest.password + " " + updateRequest.displayName + " " + updateRequest.avatar);
+                "PUT " + id.toString() + updateRequest.password + " " + updateRequest.displayName + " "
+                        + updateRequest.avatar);
         String grp = "";
         for (String tmp : jwt.getGroups()) {
             grp = tmp;

@@ -87,7 +87,7 @@ public class ProjectResource {
     @RolesAllowed({ "admin", "user" }) // 401 + 403
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProjects(ProjectRequest request) {
-        if (request == null || request.name == null || request.name.length() == 0) {
+        if (request == null || request.name == null || request.name.length() == 0 || request.name.isBlank()) {
             return Response.ok().status(400).build();
         }
         Logger.logRequest(jwt.getSubject(), "/api/projects/", "POST " + request.name);
