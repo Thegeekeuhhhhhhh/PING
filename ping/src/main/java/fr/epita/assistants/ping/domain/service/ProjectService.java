@@ -102,7 +102,7 @@ public class ProjectService {
             Stream<Path> stream = Files.list(lol);
             stream.forEach(elt -> {
                 res.add(new GetFileResponse(elt.getFileName().toString(), elt.toString(),
-                        Files.isDirectory(Paths.get(elt.toString()))));
+                        Files.isDirectory(Paths.get(elt.getFileName().toString()))));
             });
         } catch (IOException e) {
             System.out.println("WTF CA MARCHE PLUS");
@@ -124,12 +124,12 @@ public class ProjectService {
     }
 
     public Boolean moveFolder(String p, String p2) {
-        File theDir = new File(path + "/" + p);
-        if (!theDir.exists()) {
+        File theDir = new File(p);
+        if (theDir.exists()) {
             return false;
         }
-        Path source = Paths.get(path + "/" + p);
-        Path target = Paths.get(path + "/" + p2);
+        Path source = Paths.get(p);
+        Path target = Paths.get(p2);
         try {
             Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
         } catch (Exception e) {

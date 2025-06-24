@@ -343,6 +343,11 @@ public class ProjectResource {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "TU ME DIS N IMPORTE QUOI");
             return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
         }
+        if (executeFeatureRequest.command.equals("add")
+                && (executeFeatureRequest.params == null || executeFeatureRequest.params.size() == 0)) {
+            Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/add-user", "TU ME DIS N IMPORTE QUOI");
+            return Response.ok(new ErrorInfo("ARRETE")).status(400).build();
+        }
         List<String> fin = new ArrayList<String>();
         fin.add(executeFeatureRequest.feature);
         fin.add(executeFeatureRequest.command);
@@ -394,11 +399,13 @@ public class ProjectResource {
         try {
             Process process = pbBuilder.start();
             int output = process.waitFor();
-            if (output != 0) {
-                Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec",
-                        "J AI PAS PU RUN TA COMMANDE NOEUILLE");
-                return Response.ok(new ErrorInfo("PROUT")).status(400).build();
-            }
+            /*
+             * if (output != 0) {
+             * Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec",
+             * "J AI PAS PU RUN TA COMMANDE NOEUILLE");
+             * return Response.ok(new ErrorInfo("PROUT")).status(400).build();
+             * }
+             */
         } catch (Exception e) {
             Logger.logErrorRequest(jwt.getSubject(), "/api/projects/{id}/exec", "JE VIENS D EXPLOSER");
             return Response.ok(new ErrorInfo("MACRON")).status(400).build();
