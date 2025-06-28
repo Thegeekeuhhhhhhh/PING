@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
+import SignalDanger from './Signal';
+import Danger from './Danger';
+import AddTeam from './AddTeam';
 
 function Dashboard() {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [selectedDanger, setSelectedDanger] = useState(null);
   const [teams, setTeams] = useState([
     { id: 1, name: 'Equipe 1', color: '#ff4444', active: true },
     { id: 2, name: 'Equipe 2', color: '#ffff44', active: false },
@@ -49,8 +54,21 @@ function Dashboard() {
   const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
   const handleAddTeam = () => {
-    // Cette fonction sera appelée pour naviguer vers la page d'ajout d'équipe
-    console.log('Naviguer vers la page d\'ajout d\'équipe');
+    setCurrentPage('addTeam');
+  };
+
+  const handleAddDanger = () => {
+    setCurrentPage('signalDanger');
+  };
+
+  const handleDangerClick = (danger) => {
+    setSelectedDanger(danger);
+    setCurrentPage('dangerDetail');
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentPage('dashboard');
+    setSelectedDanger(null);
   };
 
   const toggleTeamActive = (teamId) => {
@@ -62,114 +80,184 @@ function Dashboard() {
   const getTeamById = (id) => teams.find(team => team.id === id);
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-grid">
-        {/* Liste des lignes */}
-        <div className="section teams-section">
-          <div className="section-header">
-            <h2>Liste des lignes</h2>
-          </div>
-          <div className="teams-list">
-            {teams.map(team => (
-              <div key={team.id} className="team-item">
-                <div 
-                  className="team-color-indicator" 
-                  style={{ backgroundColor: team.color }}
-                ></div>
-                <span className="team-name">{team.name}</span>
-                <div 
-                  className={`team-status ${team.active ? 'active' : 'inactive'}`}
-                  onClick={() => toggleTeamActive(team.id)}
-                ></div>
+    <div>
+      {currentPage === 'dashboard' ? (
+        <div className="dashboard">
+          <div className="dashboard-grid">
+            {/* Liste des lignes */}
+            <div className="section teams-section">
+              <div className="section-header">
+                <h2>Liste des lignes</h2>
               </div>
-            ))}
-            <button className="add-team-btn" onClick={handleAddTeam}>
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Agenda */}
-        <div className="section agenda-section">
-          <div className="section-header">
-            <h2>Agenda</h2>
-          </div>
-          <div className="agenda-grid">
-            {daysOfWeek.map(day => (
-              <div key={day} className="day-column">
-                <div className="day-header">{day}</div>
-                <div className="day-content">
-                  {agenda[day].map((slot, index) => (
+              <div className="teams-list">
+                {teams.map(team => (
+                  <div key={team.id} className="team-item">
                     <div 
-                      key={index} 
-                      className="time-slot"
-                      style={{ 
-                        backgroundColor: slot.color,
-                        border: `2px solid ${slot.color}`
-                      }}
-                    >
-                      {slot.timeSlot}
-                    </div>
-                  ))}
-                </div>
+                      className="team-color-indicator" 
+                      style={{ backgroundColor: team.color }}
+                    ></div>
+                    <span className="team-name">{team.name}</span>
+                    <div 
+                      className={`team-status ${team.active ? 'active' : 'inactive'}`}
+                      onClick={() => toggleTeamActive(team.id)}
+                    ></div>
+                  </div>
+                ))}
+                <button className="add-team-btn" onClick={handleAddTeam}>
+                  +
+                </button>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Progression */}
-        <div className="section progress-section">
-          <div className="section-header">
-            <h2>Progression</h2>
-          </div>
-          <div className="progress-list">
-            {progress.map(item => {
-              const team = getTeamById(item.teamId);
-              return (
-                <div key={item.teamId} className="progress-item">
-                  <div className="progress-info">
-                    <span className="progress-percentage">{item.percentage}%</span>
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ 
-                          width: `${item.percentage}%`,
-                          backgroundColor: team?.color 
-                        }}
-                      ></div>
+            {/* Agenda */}
+            <div className="section agenda-section">
+              <div className="section-header">
+                <h2>Agenda</h2>
+              </div>
+              <div className="agenda-grid">
+                {daysOfWeek.map(day => (
+                  <div key={day} className="day-column">
+                    <div className="day-header">{day}</div>
+                    <div className="day-content">
+                      {agenda[day].map((slot, index) => (
+                        <div 
+                          key={index} 
+                          className="time-slot"
+                          style={{ 
+                            backgroundColor: slot.color,
+                            border: `2px solid ${slot.color}`
+                          }}
+                        >
+                          {slot.timeSlot}
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <div className="remaining-time">
-                    <input 
-                      type="text" 
-                      placeholder={item.remainingTime}
-                      className="time-input"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Dangers */}
-        <div className="section dangers-section">
-          <div className="section-header">
-            <h2>Dangers</h2>
-          </div>
-          <div className="dangers-list">
-            {dangers.map(danger => (
-              <div key={danger.id} className="danger-item">
-                <div className="danger-type">{danger.type}</div>
-                <div className="danger-location">{danger.location}</div>
+                ))}
               </div>
-            ))}
-            <button className="add-danger-btn">
-              +
-            </button>
+            </div>
+
+            {/* Progression */}
+            <div className="section progress-section">
+              <div className="section-header">
+                <h2>Progression</h2>
+              </div>
+              <div className="progress-list">
+                {progress.map(item => {
+                  const team = getTeamById(item.teamId);
+                  return (
+                    <div key={item.teamId} className="progress-item">
+                      <div className="progress-info">
+                        <span className="progress-percentage">{item.percentage}%</span>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill"
+                            style={{ 
+                              width: `${item.percentage}%`,
+                              backgroundColor: team?.color 
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div className="remaining-time">
+                        <input 
+                          type="text" 
+                          placeholder={item.remainingTime}
+                          className="time-input"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Dangers */}
+            <div className="section dangers-section">
+              <div className="section-header">
+                <h2>Dangers</h2>
+              </div>
+              <div className="dangers-list">
+                {dangers.map(danger => (
+                  <div 
+                    key={danger.id} 
+                    className="danger-item"
+                    onClick={() => handleDangerClick(danger)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="danger-type">{danger.type}</div>
+                    <div className="danger-location">{danger.location}</div>
+                  </div>
+                ))}
+                <button className="add-danger-btn" onClick={handleAddDanger}>
+                  +
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : currentPage === 'signalDanger' ? (
+        <div>
+          <button 
+            onClick={handleBackToDashboard}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            ← Retour au Dashboard
+          </button>
+          <SignalDanger />
+        </div>
+      ) : currentPage === 'addTeam' ? (
+        <div>
+          <button 
+            onClick={handleBackToDashboard}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              zIndex: 1000
+            }}
+          >
+            ← Retour au Dashboard
+          </button>
+          <AddTeam />
+        </div>
+      ) : (
+        <div>
+          <button 
+            onClick={handleBackToDashboard}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            ← Retour au Dashboard
+          </button>
+          <Danger />
+        </div>
+      )}
     </div>
   );
 };
