@@ -77,6 +77,17 @@
   transition: all 0.3s ease;
 }
 
+.team-item.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.team-item.clickable:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
 .team-item:hover {
   transform: translateX(4px);
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
@@ -89,6 +100,20 @@
   border-radius: 50%;
   margin-right: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  margin-left: 12px;
+}
+
+.team-members {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
 }
 
 .team-name {
@@ -104,38 +129,22 @@
   height: 12px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .team-status.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
 }
 
 .team-status.inactive {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  background-color: #6b7280;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.3);
 }
 
-.add-team-btn {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  font-size: 24px;
-  font-weight: 300;
-  color: #64748b;
-  cursor: pointer;
-  margin-top: 16px;
-  transition: all 0.3s ease;
-}
-
-.add-team-btn:hover {
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-  color: #475569;
-  transform: translateY(-1px);
+.team-status:hover {
+  transform: scale(1.2);
 }
 
 /* Agenda Section */

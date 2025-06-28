@@ -3,15 +3,83 @@ import './Dashboard.css';
 import SignalDanger from './Signal';
 import Danger from './Danger';
 import AddTeam from './AddTeam';
+import TeamDetail from './TeamDetail'
+import type { Team } from './types'
 
 function Dashboard() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [selectedDanger, setSelectedDanger] = useState(null);
-  const [teams, setTeams] = useState([
-    { id: 1, name: 'Equipe 1', color: '#ff4444', active: true },
-    { id: 2, name: 'Equipe 2', color: '#ffff44', active: false },
-    { id: 3, name: 'Equipe 3', color: '#44ff44', active: true },
-    { id: 4, name: 'Equipe 4', color: '#4444ff', active: true }
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [teams, setTeams] = useState<Team[]>([
+    { 
+      id: 1, 
+      name: 'Equipe 1', 
+      color: '#ff4444', 
+      active: true,
+      status: 'active',
+      startTime: '08:00',
+      estimatedEndTime: '16:00',
+      members: [
+        { id: 1, name: 'Marie Dubois', login: 'marie.d', role: 'chef', status: 'active' },
+        { id: 2, name: 'Pierre Martin', login: 'pierre.m', role: 'membre', status: 'active' },
+        { id: 3, name: 'Sophie Laval', login: 'sophie.l', role: 'observateur', status: 'break' }
+      ],
+      waypoints: [
+        { id: 1, name: 'Vieux-Montréal', lat: 45.5048, lng: -73.5536, order: 1, completed: true },
+        { id: 2, name: 'Centre-ville', lat: 45.5019, lng: -73.5674, order: 2, completed: true },
+        { id: 3, name: 'Plateau Mont-Royal', lat: 45.5200, lng: -73.5806, order: 3, completed: false },
+        { id: 4, name: 'Mile End', lat: 45.5230, lng: -73.6020, order: 4, completed: false }
+      ]
+    },
+    { 
+      id: 2, 
+      name: 'Equipe 2', 
+      color: '#ffff44', 
+      active: false,
+      status: 'inactive',
+      members: [
+        { id: 4, name: 'Julie Lavoie', login: 'julie.l', role: 'chef', status: 'inactive' },
+        { id: 5, name: 'Marc Tremblay', login: 'marc.t', role: 'membre', status: 'inactive' }
+      ],
+      waypoints: []
+    },
+    { 
+      id: 3, 
+      name: 'Equipe 3', 
+      color: '#44ff44', 
+      active: true,
+      status: 'active',
+      startTime: '09:00',
+      estimatedEndTime: '17:00',
+      members: [
+        { id: 6, name: 'Alex Dupont', login: 'alex.d', role: 'chef', status: 'active' },
+        { id: 7, name: 'Catherine Roy', login: 'cat.r', role: 'membre', status: 'active' },
+        { id: 8, name: 'Jean Côté', login: 'jean.c', role: 'secours', status: 'active' }
+      ],
+      waypoints: [
+        { id: 5, name: 'Outremont', lat: 45.5200, lng: -73.6050, order: 1, completed: true },
+        { id: 6, name: 'Mont-Royal', lat: 45.5074, lng: -73.5878, order: 2, completed: false },
+        { id: 7, name: 'Rosemont', lat: 45.5370, lng: -73.5820, order: 3, completed: false }
+      ]
+    },
+    { 
+      id: 4, 
+      name: 'Equipe 4', 
+      color: '#4444ff', 
+      active: true,
+      status: 'completed',
+      startTime: '06:00',
+      estimatedEndTime: '14:00',
+      members: [
+        { id: 9, name: 'Robert Gagnon', login: 'rob.g', role: 'chef', status: 'inactive' },
+        { id: 10, name: 'Lisa Bergeron', login: 'lisa.b', role: 'membre', status: 'inactive' }
+      ],
+      waypoints: [
+        { id: 8, name: 'Lachine', lat: 45.4370, lng: -73.6700, order: 1, completed: true },
+        { id: 9, name: 'Verdun', lat: 45.4580, lng: -73.5680, order: 2, completed: true },
+        { id: 10, name: 'Griffintown', lat: 45.4930, lng: -73.5590, order: 3, completed: true }
+      ]
+    }
   ]);
 
   const [agenda, setAgenda] = useState({
@@ -61,14 +129,20 @@ function Dashboard() {
     setCurrentPage('signalDanger');
   };
 
-  const handleDangerClick = (danger) => {
+  const handleDangerClick = (danger: any) => {
     setSelectedDanger(danger);
     setCurrentPage('dangerDetail');
+  };
+
+  const handleTeamClick = (team: Team) => {
+    setSelectedTeam(team);
+    setCurrentPage('teamDetail');
   };
 
   const handleBackToDashboard = () => {
     setCurrentPage('dashboard');
     setSelectedDanger(null);
+    setSelectedTeam(null);
   };
 
   const toggleTeamActive = (teamId) => {
@@ -91,15 +165,27 @@ function Dashboard() {
               </div>
               <div className="teams-list">
                 {teams.map(team => (
-                  <div key={team.id} className="team-item">
+                  <div 
+                    key={team.id} 
+                    className="team-item clickable"
+                    onClick={() => handleTeamClick(team)}
+                  >
                     <div 
                       className="team-color-indicator" 
                       style={{ backgroundColor: team.color }}
                     ></div>
-                    <span className="team-name">{team.name}</span>
+                    <div className="team-info">
+                      <span className="team-name">{team.name}</span>
+                      <span className="team-members">
+                        {team.members.length} membre{team.members.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
                     <div 
                       className={`team-status ${team.active ? 'active' : 'inactive'}`}
-                      onClick={() => toggleTeamActive(team.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleTeamActive(team.id);
+                      }}
                     ></div>
                   </div>
                 ))}
@@ -237,6 +323,11 @@ function Dashboard() {
           </button>
           <AddTeam />
         </div>
+      ) : currentPage === 'teamDetail' && selectedTeam ? (
+        <TeamDetail 
+          team={selectedTeam}
+          onBack={handleBackToDashboard}
+        />
       ) : (
         <div>
           <button 
