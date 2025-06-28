@@ -1,0 +1,276 @@
+/* Dashboard.css */
+.dashboard {
+  width: 100%;
+  height: 100vh;
+  background-color: #2c3333;
+  font-family: Arial, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  height: 100vh;
+  gap: 2px;
+}
+
+.section {
+  background-color: #2c3333;
+  border: 1px solid #666;
+}
+
+.section-header {
+  background-color: #5a7470;
+  color: white;
+  padding: 15px 20px;
+  margin: 0;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+/* Teams Section */
+.teams-section {
+  background-color: #A5c9cA;
+}
+
+.teams-list {
+  padding: 20px;
+}
+
+.team-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #bbb;
+}
+
+.team-color-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.team-name {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+}
+
+.team-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #666;
+}
+
+.team-status.active {
+  background-color: #4a9eff;
+}
+
+.team-status.inactive {
+  background-color: transparent;
+}
+
+.add-team-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: transparent;
+  border: 1px dashed #666;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-team-btn:hover {
+  background-color: #c0c0c0;
+}
+
+/* Agenda Section */
+.agenda-section {
+  background-color: #A5c9cA;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  height: calc(100% - 60px);
+}
+
+.day-column {
+  border-right: 1px solid #999;
+  height: 100%;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+.day-header {
+  background-color: #A5c9cA;
+  padding: 10px 5px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #999;
+  font-size: 14px;
+}
+
+.day-content {
+  padding: 10px 5px;
+  height: calc(100% - 40px);
+}
+
+.time-slot {
+  background-color: #A5c9cA;
+  color: white;
+  padding: 8px 4px;
+  margin: 5px 0;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Progress Section */
+.progress-section {
+  background-color: #A5c9cA;
+}
+
+.progress-list {
+  padding: 20px;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.progress-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 35px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 20px;
+  background-color: #A5c9cA;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.remaining-time {
+  flex: 1;
+}
+
+.time-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #999;
+  background-color: #A5c9cA;
+  font-size: 12px;
+}
+
+.time-input::placeholder {
+  color: #666;
+}
+
+/* Dangers Section */
+.dangers-section {
+  background-color: #A5c9cA;
+}
+
+.dangers-list {
+  padding: 20px;
+}
+
+.danger-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #bbb;
+}
+
+.danger-type {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.danger-location {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.add-danger-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: transparent;
+  border: 1px dashed #666;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-danger-btn:hover {
+  background-color: #c0c0c0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+  }
+  
+  .agenda-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .day-header {
+    font-size: 12px;
+  }
+  
+  .time-slot {
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .agenda-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .section-header h2 {
+    font-size: 18px;
+  }
+  
+  .progress-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
