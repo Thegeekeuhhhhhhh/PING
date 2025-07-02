@@ -19,6 +19,7 @@ interface TeamDetailProps {
 }
 
 const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
+  const [currentTeam, setCurrentTeam] = useState(team);
   const [login, setLogin] = useState('');
   const createTeamIcon = (color: string, completed: boolean = false) => {
     return L.divIcon({
@@ -97,8 +98,12 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     };
     var a = await fetch("http://localhost:8080/api/teams/addMember", requestOptions)
     if (a.ok) {
-      /*var res = await a.json();
-      team.members?.push(res);*/
+      var res = await a.json();
+      setCurrentTeam(prevTeam => ({
+          ...prevTeam,
+          members: [...(prevTeam.members || []), res]
+        }));
+      setLogin('');
     }
     else {
       alert("nononon");
@@ -158,9 +163,9 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
 
           {/* Liste des membres */}
           <div className="team-members">
-            <h3>Membres de l'équipe ({team.members?.length || 0})</h3>
+            <h3>Membres de l'équipe ({currentTeam.members?.length || 0})</h3>
             <div className="members-list">
-              {team.members?.map(member => (
+              {currentTeam.members?.map(member => (
                 <div key={member.id} className="member-item">
                   <div className="member-info">
                     <span className="member-icon">{getRoleIcon(member.role)}</span>
