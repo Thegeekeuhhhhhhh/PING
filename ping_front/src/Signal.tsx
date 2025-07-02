@@ -43,17 +43,16 @@ function SignalDanger({fun}) {
 
     const res = await temp.json();
     console.log(res);
+    const loc = res["location"];
     const desc = res["description"];
-    const num = res["number"];
-    const place = res["place"];
+    const id = res["id"];
     const type = res["type"];
 
     fun({
-        location: num + " " + place, type: type, description: desc
-    })
+        location: loc, type: type, description: desc
+    });
 
-
-    alert(`Danger signalé !\n\nLieu: ${place}\nNuméro: ${num}\nType: ${type}\nDescription: ${desc}`);
+    alert(`Danger signalé !\n\nLieu: ${loc}\nID: ${id}\nType: ${type}\nDescription: ${desc}`);
   };
 
   return (

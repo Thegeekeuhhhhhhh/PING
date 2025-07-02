@@ -147,6 +147,11 @@ function Dashboard() {
     setDangers(e => [...e, d]);
   };
 
+  const addTeam = (d: any) => {
+    d["id"] = teams.length;
+    setTeams(e => [...e, d]);
+  };
+
   const handleDangerClick = (danger: any) => {
     setSelectedDanger(danger);
     setCurrentPage('dangerDetail');
@@ -396,14 +401,20 @@ function Dashboard() {
   
     const dangersx = await fetch("http://localhost:8080/api/dangers");
     const dangersok = await dangersx.json();
-    setDangers(dangersok);
+    for (const da of dangersok) {
+      addDanger(da);
+    }
+    // setDangers(dangersok);
 
     const teamsx = await fetch("http://localhost:8080/api/teams");
     const teamsok = await teamsx.json();
-    setTeams(teamsok);
+    for (const te of teamsok) {
+      addTeam(te);
+    }
+    // setTeams(teamsok);
 
     let p = [];
-    for (const t of teamsok) {
+    for (const t of teams) {
       p.push({
         id: t["id"],
         percentage: Math.floor(Math.random() * 101),
@@ -477,7 +488,7 @@ function Dashboard() {
                   </div>
                 ))}
                 <button className="add-team-btn" onClick={handleAddTeam}>
-                  +
+                  Ajouter une équipe
                 </button>
               </div>
             </div>
@@ -616,7 +627,7 @@ function Dashboard() {
           >
             ← Retour au Dashboard
           </button>
-          <AddTeam />
+          <AddTeam fun={addTeam}/>
         </div>
       ) : currentPage === 'teamDetail' && selectedTeam ? (
         <TeamDetail 

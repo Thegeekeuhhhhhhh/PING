@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const AddTeam: React.FC = () => {
+const AddTeam: React.FC = ({fun}) => {
   const [teamName, setTeamName] = useState('');
   const [teamColor, setTeamColor] = useState('#ff4444');
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
@@ -122,7 +122,7 @@ const AddTeam: React.FC = () => {
     return [...waypoints, ...customWaypoints];
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!teamName.trim()) {
       alert('Veuillez entrer un nom d\'équipe');
       return;
@@ -138,6 +138,24 @@ const AddTeam: React.FC = () => {
       name: teamName,
       color: teamColor,
       waypoints: allWaypoints
+    });
+
+    const temp = await fetch("http://localhost:8080/api/teams",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({name: teamName, color: teamColor, status: "active", lm: [], lw: []})
+    });
+
+    fun({
+      name: teamName,
+      color: teamColor,
+      status: "active",
+      members: [],
+      waypoints: allWaypoints,
     });
 
     alert(`Équipe "${teamName}" créée avec ${allWaypoints.length} points de passage !`);
