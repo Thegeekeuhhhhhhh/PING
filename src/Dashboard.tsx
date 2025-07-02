@@ -10,6 +10,7 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [selectedDanger, setSelectedDanger] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
+
   const [teams, setTeams] = useState<Team[]>([
     { 
       id: 1, 
@@ -158,6 +159,100 @@ function Dashboard() {
 
   const getTeamById = (id) => teams.find(team => team.id === id);
 
+  const fetchExampleData = async () => {
+    // Creation of every members
+    const p1x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "marie.d", name: "Marie Dubois", role: "chef", status: "active"})
+    });
+    const p2x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "pierre.m", name: "Pierre Martin", role: "membre", status: "active"})
+    });
+    const p3x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "sophie.l", name: "Sophie Laval", role: "observateur", status: "break"})
+    });
+    
+    const w1x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Vieux-Montréal', lat: 45.5048, lng: -73.5536, order: 1, completed: true })
+    });
+    const w2x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Centre-ville', lat: 45.5019, lng: -73.5674, order: 2, completed: true })
+    });
+    const w3x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Plateau Mont-Royal', lat: 45.5200, lng: -73.5806, order: 3, completed: false })
+    });
+    const w4x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Mile End', lat: 45.5230, lng: -73.6020, order: 4, completed: false })
+    });
+
+    const p1 = await p1x.json();
+    const p2 = await p2x.json();
+    const p3 = await p3x.json();
+    const w1 = await w1x.json();
+    const w2 = await w2x.json();
+    const w3 = await w3x.json();
+    const w4 = await w4x.json();
+  
+    await fetch("http://localhost:8080/api/teams",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Equipe 1', color: '#ff4444', status: 'active',
+          lm: [
+          p1["id"], p2["id"], p3["id"]
+        ],
+          lw: [
+            w1["id"], w2["id"], w3["id"], w4["id"]
+          ],
+      })
+    });
+  }
+
+
   return (
     <div>
       {currentPage === 'dashboard' ? (
@@ -284,6 +379,14 @@ function Dashboard() {
                   +
                 </button>
               </div>
+            </div>
+
+            {/* Le bouton bonus */}
+            <div>
+              <button
+                onClick={fetchExampleData}>
+                Load example data
+              </button>
             </div>
           </div>
         </div>
