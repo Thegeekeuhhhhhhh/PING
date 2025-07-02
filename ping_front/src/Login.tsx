@@ -36,22 +36,7 @@ function Login() {
   const [text_confEmail, setTextConfEmail] = useState('');
 
   const login = async () => {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          "login": text_login,
-          "password": text_pwd
-        })
-    };
-    var a = await fetch("http://localhost:8080/api/user/login", requestOptions)
-    if (a.ok) {
-      var res = await a.json()
-      loginWithToken(res.token); // Use the hook method
-    }
-    else {
-      alert("nononon");
-    }
+    loginWithToken("res"); // Use the hook method
   };
   const register = async () => {
     const requestOptions = {
@@ -59,13 +44,14 @@ function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           "login": text_loginREgister,
-          "password": text_pwdRegister,
-          "isAdmin": false
+          "name": text_loginREgister,
+          "role": "Membre",
+          "status": "active",
         })
     };
-    var a = await fetch("http://localhost:8080/api/user/", requestOptions)
+    var a = await fetch("http://localhost:8080/api/members/", requestOptions)
     if (a.ok) {
-      alert("you can connect now");
+      loginWithToken("res");
     }
     else {
       alert("nononon");

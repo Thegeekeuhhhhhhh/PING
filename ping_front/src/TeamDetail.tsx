@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -19,6 +19,8 @@ interface TeamDetailProps {
 }
 
 const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
+  const [currentTeam, setCurrentTeam] = useState(team);
+  const [login, setLogin] = useState('');
   const createTeamIcon = (color: string, completed: boolean = false) => {
     return L.divIcon({
       className: 'team-waypoint-marker',
@@ -85,6 +87,29 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     }
   };
 
+  const addMember = async () => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          "login": login,
+          "name": team.name
+        })
+    };
+    var a = await fetch("http://localhost:8080/api/teams/addMember", requestOptions)
+    if (a.ok) {
+      var res = await a.json();
+      setCurrentTeam(prevTeam => ({
+          ...prevTeam,
+          members: [...(prevTeam.members || []), res]
+        }));
+      setLogin('');
+    }
+    else {
+      alert("nononon");
+    }
+  };
+
   const completedWaypoints = team.waypoints.filter(wp => wp.completed === true).length;
   const totalWaypoints = team.waypoints.length;
   const progressPercentage = totalWaypoints > 0 ? (completedWaypoints / totalWaypoints) * 100 : 0;
@@ -138,9 +163,9 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
 
           {/* Liste des membres */}
           <div className="team-members">
-            <h3>Membres de l'équipe ({team.members?.length || 0})</h3>
+            <h3>Membres de l'équipe ({currentTeam.members?.length || 0})</h3>
             <div className="members-list">
-              {team.members?.map(member => (
+              {currentTeam.members?.map(member => (
                 <div key={member.id} className="member-item">
                   <div className="member-info">
                     <span className="member-icon">{getRoleIcon(member.role)}</span>
@@ -162,7 +187,18 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                   </div>
                 </div>
               ))}
+            <input
+                type="text"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+                placeholder="Entrez le login du membre"
+                className="form-input"
+              />
+            <button className="add-team-btn" onClick={addMember}>
+                  +
+            </button>
             </div>
+            
           </div>
         </div>
 

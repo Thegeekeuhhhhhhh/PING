@@ -70,4 +70,11 @@ public class TeamService {
     public void deleteTeam(UUID id) {
         teamRepository.deleteTeam(id);
     }
+        
+    public MemberModel addMember(String login, String name) {
+        if (teamRepository.addMember(memberService.getMember_by_login(login), name)) {
+            return memberService.getMember_by_login(login);
+        }
+        return null;
+    }
 }
