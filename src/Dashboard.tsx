@@ -11,7 +11,9 @@ function Dashboard() {
   const [selectedDanger, setSelectedDanger] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
 
-  const [teams, setTeams] = useState<Team[]>([
+  const [teams, setTeams] = useState<Team[]>([]);
+  
+  /*[
     { 
       id: 1, 
       name: 'Equipe 1', 
@@ -82,6 +84,7 @@ function Dashboard() {
       ]
     }
   ]);
+  */
 
   const [agenda, setAgenda] = useState({
     'Lundi': [
@@ -226,6 +229,27 @@ function Dashboard() {
         body: JSON.stringify({ name: 'Mile End', lat: 45.5230, lng: -73.6020, order: 4, completed: false })
     });
 
+    const d1x = await fetch("http://localhost:8080/api/dangers",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ place: "Rue Rachel Est", number: 994, type: "Stationnement", description: "La voiture de Noah est garée au milieu de la route." })
+    });
+
+    const d2x = await fetch("http://localhost:8080/api/dangers",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ place: "Rue Zoe North", number: 12, type: "Débris", description: "Tronc d'arbre sur la voie." })
+    });
+
+
     const p1 = await p1x.json();
     const p2 = await p2x.json();
     const p3 = await p3x.json();
@@ -250,6 +274,12 @@ function Dashboard() {
           ],
       })
     });
+
+    const test = await fetch("http://localhost:8080/api/dangers");
+    console.log(test);
+    const lolilol = await test.json();
+    console.log(lolilol);
+    setDangers(lolilol);
   }
 
 
