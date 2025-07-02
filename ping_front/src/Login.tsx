@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import snowPlow from './assets/snowplow_image.png'
 import './Login.css'
 
@@ -21,6 +22,8 @@ var doggyStyle = {
 };
 
 function Login() {
+  const navigate = useNavigate();
+  
     //LOGIN PART
   const [text_login, setTextLogin] = useState('');
   const [text_pwd, setTextPWD] = useState('');
@@ -43,13 +46,14 @@ function Login() {
     };
     var a = await fetch("http://localhost:8080/api/user/login", requestOptions)
     if (a.ok) {
-      var res = await a.json()
-      localStorage.setItem("token", res.token);
+      // Navigate to dashboard on successful login
+      navigate('/dashboard');
     }
     else {
       alert("nononon");
     }
   };
+  
   const register = async () => {
     const requestOptions = {
         method: 'POST',
