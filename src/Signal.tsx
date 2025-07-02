@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './signal.css';
 
-function SignalDanger() {
+function SignalDanger({fun}) {
   const [formData, setFormData] = useState({
     lieu: '',
     numeroRue: '',
@@ -25,13 +25,35 @@ function SignalDanger() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.lieu || !formData.typeDanger || !formData.description) {
       alert('Veuillez remplir tous les champs obligatoires');
       return;
     }
-    
-    alert(`Danger signalé !\n\nLieu: ${formData.lieu}\nNuméro: ${formData.numeroRue}\nType: ${formData.typeDanger}\nDescription: ${formData.description}`);
+
+    const temp = await fetch("http://localhost:8080/api/dangers",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({place: formData.lieu, number: formData.numeroRue, type: formData.typeDanger, description: formData.description})
+    });
+
+    const res = await temp.json();
+    console.log(res);
+    const desc = res["description"];
+    const num = res["number"];
+    const place = res["place"];
+    const type = res["type"];
+
+    fun({
+        location: num + " " + place, type: type, description: desc
+    })
+
+
+    alert(`Danger signalé !\n\nLieu: ${place}\nNuméro: ${num}\nType: ${type}\nDescription: ${desc}`);
   };
 
   return (

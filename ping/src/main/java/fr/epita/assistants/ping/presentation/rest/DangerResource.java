@@ -7,12 +7,9 @@ import fr.epita.assistants.ping.domain.service.DangerService;
 import fr.epita.assistants.ping.domain.service.DangerService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.common.api.request.UserRequest;
-import fr.epita.assistants.ping.common.api.request.AddMemberToDangerRequest;
 import fr.epita.assistants.ping.common.api.request.CreateDangerRequest;
 import fr.epita.assistants.ping.common.api.request.ExecuteFeatureRequest;
 import fr.epita.assistants.ping.common.api.request.LoginRequest;
-import fr.epita.assistants.ping.common.api.request.DangerRequest;
-import fr.epita.assistants.ping.common.api.request.UpdateDangerRequest;
 import fr.epita.assistants.ping.common.api.response.UserResponse;
 import fr.epita.assistants.ping.common.api.request.UpdateRequest;
 import fr.epita.assistants.ping.data.model.DangerModel;
@@ -84,6 +81,9 @@ public class DangerResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createDanger(CreateDangerRequest createDangerRequest) {
+        Logger.logRequest(jwt.getSubject(), "/api/dangers/",
+                "POST\n" + "Endroit: " + createDangerRequest.number + " " + createDangerRequest.place + "\nDanger: "
+                        + createDangerRequest.type + "\nDescription: " + createDangerRequest.description);
         DangerModel d = dangerService.addDanger(createDangerRequest.place, createDangerRequest.number,
                 createDangerRequest.type, createDangerRequest.description);
         DangerResponse res = new DangerResponse(d.place, d.number, d.type, d.description);
@@ -93,7 +93,8 @@ public class DangerResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createDanger(@PathParam("id") UUID id) {
+    public Response deleteDanger(@PathParam("id") UUID id) {
+        Logger.logRequest(jwt.getSubject(), "/api/dangers/{id}", "DELETE");
         dangerService.deleteDanger(id);
         return Response.ok("SUPER !").status(204).build();
     }

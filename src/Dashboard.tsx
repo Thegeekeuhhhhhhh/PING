@@ -115,8 +115,8 @@ function Dashboard() {
   ]);
 
   const [dangers, setDangers] = useState([
-    { id: 1, type: 'Stationnement', location: '994 Rue Rachel Est, Montréal, QC H2J 2J3' },
-    { id: 2, type: 'Débris', location: '994 Rue Zoe North, Montréal, QC H1J' }
+    { id: 1, type: 'Stationnement', location: '994 Rue Rachel Est' },
+    { id: 2, type: 'Débris', location: '994 Rue Zoe North' }
   ]);
 
   const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -127,6 +127,11 @@ function Dashboard() {
 
   const handleAddDanger = () => {
     setCurrentPage('signalDanger');
+  };
+
+  const addDanger = (d) => {
+    d["id"] = dangers.length;
+    setDangers(e => [...e, d]);
   };
 
   const handleDangerClick = (danger: any) => {
@@ -300,7 +305,7 @@ function Dashboard() {
           >
             ← Retour au Dashboard
           </button>
-          <SignalDanger />
+          <SignalDanger fun={addDanger} />
         </div>
       ) : currentPage === 'addTeam' ? (
         <div>
