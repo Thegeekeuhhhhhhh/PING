@@ -35,6 +35,9 @@ public class MemberService {
     public MemberModel getMember(UUID id) {
         return memberRepository.getMember(id);
     }
+    public MemberModel getMember_by_login(String login) {
+        return memberRepository.getMember_by_login(login);
+    }
 
     public MemberModel addMember(String login, String name, String role, String status) {
         return memberRepository.addMember(login, name, role, status);

@@ -50,4 +50,20 @@ public class TeamRepository implements PanacheRepository<TeamModel> {
             delete(getTeam(id));
         }
     }
+
+    @Transactional
+    public Boolean addMember(MemberModel user, String name) {
+        TeamModel m = null;
+        List<TeamModel> temp = listAll();
+        for (TeamModel p : temp) {
+            if (p.name.equals(name)) {
+                m = p;
+            }
+        }
+        if (m == null) {
+            return false;
+        }
+        m.members.add(user);
+        return true;
+    }
 }

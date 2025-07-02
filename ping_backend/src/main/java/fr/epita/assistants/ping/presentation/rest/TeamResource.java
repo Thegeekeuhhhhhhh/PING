@@ -31,6 +31,10 @@ import io.vertx.core.json.JsonObject;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 
+import fr.epita.assistants.ping.common.api.response.AddMemberResponse;
+
+import fr.epita.assistants.ping.common.api.request.LoginMember;
+
 import java.util.*;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -96,6 +100,18 @@ public class TeamResource {
         TeamResponse res = new TeamResponse(d.name, d.color, d.status, onrefaittout, waouh, d.id);
 
         Logger.logRequest(jwt.getSubject(), "/api/teams/{id}", "GET " + "all ok !!!");
+        return Response.ok(res).status(200).build();
+    }
+
+    @POST
+    @Path("/addMember")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addMember(LoginMember login) {
+        MemberModel a = teamService.addMember(login.login, login.name);
+        if (a == null) {
+            return Response.ok().status(404).build();
+        }
+        AddMemberResponse res = new AddMemberResponse(a.name,a.login,a.role,a.status,a.id);
         return Response.ok(res).status(200).build();
     }
 

@@ -5,7 +5,7 @@ import NotFound from './NotFound'
 import './App.css'
 
 function App() {
-  const BYPASS_AUTH = true; // Set to false for production
+  const BYPASS_AUTH = false; // Set to false for production
   
   // Check if user is authenticated
   const isAuthenticated = () => {

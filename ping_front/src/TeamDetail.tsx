@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -19,6 +19,7 @@ interface TeamDetailProps {
 }
 
 const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
+  const [login, setLogin] = useState('');
   const createTeamIcon = (color: string, completed: boolean = false) => {
     return L.divIcon({
       className: 'team-waypoint-marker',
@@ -82,6 +83,25 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
         return '#8b5cf6';
       default:
         return '#6b7280';
+    }
+  };
+
+  const addMember = async () => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          "login": login,
+          "name": team.name
+        })
+    };
+    var a = await fetch("http://localhost:8080/api/teams/addMember", requestOptions)
+    if (a.ok) {
+      /*var res = await a.json();
+      team.members?.push(res);*/
+    }
+    else {
+      alert("nononon");
     }
   };
 
@@ -162,7 +182,18 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                   </div>
                 </div>
               ))}
+            <input
+                type="text"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+                placeholder="Entrez le login du membre"
+                className="form-input"
+              />
+            <button className="add-team-btn" onClick={addMember}>
+                  +
+            </button>
             </div>
+            
           </div>
         </div>
 

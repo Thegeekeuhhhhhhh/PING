@@ -31,6 +31,17 @@ public class MemberRepository implements PanacheRepository<MemberModel> {
     }
 
     @Transactional
+    public MemberModel getMember_by_login(String login) {
+        List<MemberModel> temp = listAll();
+        for (MemberModel p : temp) {
+            if (p.login.equals(login)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    @Transactional
     public MemberModel addMember(String login, String name, String role, String status) {
         MemberModel pm = new MemberModel();
         pm.login = login;
