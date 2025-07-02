@@ -9,15 +9,32 @@ export interface MontrealLocation {
 }
 
 export interface Waypoint {
+  id: number;
   lat: number;
   lng: number;
   name: string;
   address?: string;
+  order: number;
+  completed: boolean;
+}
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  login: string;
+  role: string;
+  status: 'active' | 'inactive' | 'break';
 }
 
 export interface Team {
+  id: number;
   name: string;
   color: string;
+  active?: boolean;
+  status: 'active' | 'inactive' | 'completed';
+  startTime?: string;
+  estimatedEndTime?: string;
+  members: TeamMember[];
   waypoints: Waypoint[];
 }
 
