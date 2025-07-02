@@ -20,10 +20,8 @@ interface TeamDetailProps {
 
 const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
   const [currentTeam, setCurrentTeam] = useState(team);
-  console.log(currentTeam);
   const [login, setLogin] = useState('');
   const createTeamIcon = (color: string, completed: boolean = false) => {
-    console.log(color);
     return L.divIcon({
       className: 'team-waypoint-marker',
       html: `<div style="
@@ -101,19 +99,20 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     var a = await fetch("http://localhost:8080/api/teams/addMember", requestOptions)
     if (a.ok) {
       var res = await a.json();
+      console.log(currentTeam);
+      
       setCurrentTeam(prevTeam => ({
           ...prevTeam,
-          members: [...(prevTeam.members || []), res]
+          members: [...(prevTeam["lm"] || []), res]
         }));
       setLogin('');
     }
     else {
-      alert("nononon");
+      alert(`Cette personne n'existe pas ou est deja presente dans l'equipe !`);
     }
   };
 
   const completedWaypoints = team["lw"].filter(wp => {
-    console.log(wp);
     wp.completed === true;
   }).length;
   const totalWaypoints = team["lw"].length;
@@ -168,9 +167,9 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
 
           {/* Liste des membres */}
           <div className="team-members">
-            <h3>Membres de l'équipe ({currentTeam.members?.length || 0})</h3>
+            <h3>Membres de l'équipe ({currentTeam["lm"].length || 0})</h3>
             <div className="members-list">
-              {currentTeam.members?.map(member => (
+              {currentTeam["lm"].map(member => (
                 <div key={member.id} className="member-item">
                   <div className="member-info">
                     <span className="member-icon">{getRoleIcon(member.role)}</span>

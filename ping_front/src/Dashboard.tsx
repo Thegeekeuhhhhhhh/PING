@@ -487,7 +487,7 @@ function Dashboard() {
                     <div className="team-info">
                       <span className="team-name">{team.name}</span>
                       <span className="team-members">
-                        {team.members?.length || 0} membre{(team.members?.length || 0) > 1 ? 's' : ''}
+                        {team["lm"].length || 0} membre{(team["lm"].length || 0) > 1 ? 's' : ''}
                       </span>
                     </div>
                     <div 

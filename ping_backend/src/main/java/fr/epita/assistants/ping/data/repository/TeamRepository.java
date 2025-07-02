@@ -53,17 +53,20 @@ public class TeamRepository implements PanacheRepository<TeamModel> {
 
     @Transactional
     public Boolean addMember(MemberModel user, String name) {
-        TeamModel m = null;
+        MemberModel m = null;
         List<TeamModel> temp = listAll();
         for (TeamModel p : temp) {
+            System.out.println(p.name);
             if (p.name.equals(name)) {
-                m = p;
+                for (MemberModel member : p.members) {
+                    if (member.id.equals(user.id)) {
+                        return false;
+                    }
+                }
+                p.members.add(user);
+                return true;
             }
         }
-        if (m == null) {
-            return false;
-        }
-        m.members.add(user);
-        return true;
+        return false;
     }
 }
