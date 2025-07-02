@@ -75,7 +75,6 @@ public class UserResource {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin" }) // 401 + 403
     public Response user(UserRequest userRequest) {
 
         if (userRequest == null || userRequest.login == null || userRequest.password == null) {

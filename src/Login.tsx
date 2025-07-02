@@ -50,7 +50,24 @@ function Login() {
       alert("nononon");
     }
   };
-  const register = () => {alert(text_loginREgister + text_pwdRegister + text_confPWD + text_email + text_confEmail)};
+  const register = async () => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          "login": text_loginREgister,
+          "password": text_pwdRegister,
+          "isAdmin": false
+        })
+    };
+    var a = await fetch("http://localhost:8080/api/user/", requestOptions)
+    if (a.ok) {
+      alert("you can connect now");
+    }
+    else {
+      alert("nononon");
+    }
+  };
   return (
     <>
     <div className='card'>
