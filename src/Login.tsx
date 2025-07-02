@@ -32,7 +32,24 @@ function Login() {
   const [text_email, setTextEmail] = useState('');
   const [text_confEmail, setTextConfEmail] = useState('');
 
-  const login = () => {alert(text_login + setTextLogin)};
+  const login = async () => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          "login": text_login,
+          "password": text_pwd
+        })
+    };
+    var a = await fetch("http://localhost:8080/api/user/login", requestOptions)
+    if (a.ok) {
+      var res = await a.json()
+      localStorage.setItem("token", res.token);
+    }
+    else {
+      alert("nononon");
+    }
+  };
   const register = () => {alert(text_loginREgister + text_pwdRegister + text_confPWD + text_email + text_confEmail)};
   return (
     <>
