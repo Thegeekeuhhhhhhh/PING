@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import './Dashboard.css';
 import SignalDanger from './Signal';
@@ -17,7 +17,38 @@ function Dashboard() {
     logout()
   }
 
+  useEffect(() => {
+    const fetching = async () => {
+      try {
+        const dangersx = await fetch("http://localhost:8080/api/dangers");
+        const dangersok = await dangersx.json();
+        setDangers(dangersok);
+
+        const teamsx = await fetch("http://localhost:8080/api/teams");
+        const teamsok = await teamsx.json();
+        console.log(teamsok);
+        setTeams(teamsok);
+
+        let p = [];
+        for (const t of teamsok) {
+          p.push({
+            id: t["id"],
+            percentage: Math.floor(Math.random() * 101),
+            remainingTime: 'Temps restant estimé :'
+          })
+        }
+        setProgress(p);
+      } catch (e) {
+        console.log("flop");
+      }
+    };
+
+    fetching();
+  }, []);
+
   const [teams, setTeams] = useState<Team[]>([]);
+
+
   /*
     { 
       id: 1, 
@@ -117,20 +148,7 @@ function Dashboard() {
   });
 
   const [progress, setProgress] = useState<Progress[]>([]);
-  /*
-    { teamId: 1, percentage: 87, remainingTime: 'Temps restant estimé :' },
-    { teamId: 2, percentage: 63, remainingTime: 'Temps restant estimé :' },
-    { teamId: 3, percentage: 50, remainingTime: 'Temps restant estimé :' },
-    { teamId: 4, percentage: 25, remainingTime: 'Temps restant estimé :' }
-  ]);
-  */
-
   const [dangers, setDangers] = useState([]);
-  /*
-    { id: 1, type: 'Stationnement', location: '994 Rue Rachel Est' },
-    { id: 2, type: 'Débris', location: '994 Rue Zoe North' }
-  ]);
-  */
 
   const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
@@ -401,17 +419,11 @@ function Dashboard() {
   
     const dangersx = await fetch("http://localhost:8080/api/dangers");
     const dangersok = await dangersx.json();
-    for (const da of dangersok) {
-      addDanger(da);
-    }
-    // setDangers(dangersok);
+    setDangers(dangersok);
 
     const teamsx = await fetch("http://localhost:8080/api/teams");
     const teamsok = await teamsx.json();
-    for (const te of teamsok) {
-      addTeam(te);
-    }
-    // setTeams(teamsok);
+    setTeams(teamsok);
 
     let p = [];
     for (const t of teams) {

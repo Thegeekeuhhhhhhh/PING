@@ -20,8 +20,10 @@ interface TeamDetailProps {
 
 const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
   const [currentTeam, setCurrentTeam] = useState(team);
+  console.log(currentTeam);
   const [login, setLogin] = useState('');
   const createTeamIcon = (color: string, completed: boolean = false) => {
+    console.log(color);
     return L.divIcon({
       className: 'team-waypoint-marker',
       html: `<div style="
@@ -41,17 +43,17 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
   };
 
   const getMapCenter = (): [number, number] => {
-    if (team.waypoints.length === 0) {
+    if (team["lw"].length === 0) {
       return [45.5017, -73.5673]; // Centre de Montréal par défaut
     }
     
-    const avgLat = team.waypoints.reduce((sum, wp) => sum + wp.lat, 0) / team.waypoints.length;
-    const avgLng = team.waypoints.reduce((sum, wp) => sum + wp.lng, 0) / team.waypoints.length;
+    const avgLat = team["lw"].reduce((sum, wp) => sum + wp.lat, 0) / team["lw"].length;
+    const avgLng = team["lw"].reduce((sum, wp) => sum + wp.lng, 0) / team["lw"].length;
     return [avgLat, avgLng];
   };
 
   const getRouteCoordinates = (): [number, number][] => {
-    return team.waypoints
+    return team["lw"]
       .filter(wp => wp.order !== undefined)
       .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map(wp => [wp.lat, wp.lng] as [number, number]);
@@ -110,8 +112,11 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     }
   };
 
-  const completedWaypoints = team.waypoints.filter(wp => wp.completed === true).length;
-  const totalWaypoints = team.waypoints.length;
+  const completedWaypoints = team["lw"].filter(wp => {
+    console.log(wp);
+    wp.completed === true;
+  }).length;
+  const totalWaypoints = team["lw"].length;
   const progressPercentage = totalWaypoints > 0 ? (completedWaypoints / totalWaypoints) * 100 : 0;
 
   return (
@@ -206,7 +211,7 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
         <div className="team-route-section">
           <h3>Itinéraire sur la carte</h3>
           
-          {team.waypoints.length === 0 ? (
+          {team["lw"].length === 0 ? (
             <div className="no-route-message">
               <p>Aucun itinéraire défini pour cette équipe.</p>
             </div>
@@ -235,7 +240,7 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                   )}
                   
                   {/* Marqueurs des waypoints */}
-                  {team.waypoints
+                  {team["lw"]
                     .filter(wp => wp.order !== undefined)
                     .sort((a, b) => (a.order || 0) - (b.order || 0))
                     .map((waypoint) => (
@@ -265,7 +270,7 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
               <div className="waypoints-list-detail">
                 <h4>Détail de l'itinéraire</h4>
                 <div className="waypoints-timeline">
-                  {team.waypoints
+                  {team["lw"]
                     .filter(wp => wp.order !== undefined)
                     .sort((a, b) => (a.order || 0) - (b.order || 0))
                     .map((waypoint) => (
