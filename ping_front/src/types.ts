@@ -9,41 +9,42 @@ export interface MontrealLocation {
 }
 
 export interface Waypoint {
-  id: number;
+  id?: number;
   lat: number;
   lng: number;
   name: string;
   address?: string;
-  order: number;
-  completed: boolean;
+  order?: number;
+  completed?: boolean;
 }
 
-export interface TeamMember {
+export interface Member {
   id: number;
   name: string;
   login: string;
   role: string;
-  status: 'active' | 'inactive' | 'break';
+  status: string;
 }
 
 export interface Team {
-  id: number;
+  id?: number;
   name: string;
   color: string;
+  waypoints: Waypoint[];
   active?: boolean;
-  status: 'active' | 'inactive' | 'completed';
+  status?: string;
   startTime?: string;
   estimatedEndTime?: string;
-  members: TeamMember[];
-  waypoints: Waypoint[];
+  members?: Member[];
 }
 
 export interface Danger {
   id: number;
-  title: string;
-  description: string;
+  title?: string;
+  type?: string;
+  description?: string;
   location: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  timestamp: string;
-  status: 'active' | 'resolved' | 'investigating';
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  timestamp?: string;
+  status?: 'active' | 'resolved' | 'investigating';
 }

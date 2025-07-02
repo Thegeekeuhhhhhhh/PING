@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './TeamDetail.css';
+import type { Team, Member, Waypoint } from './types';
 
 // Fix pour les icônes Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -11,34 +12,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
-
-interface TeamMember {
-  id: number;
-  name: string;
-  login: string;
-  role: string;
-  status: 'active' | 'inactive' | 'break';
-}
-
-interface Waypoint {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-  order: number;
-  completed: boolean;
-}
-
-interface Team {
-  id: number;
-  name: string;
-  color: string;
-  members: TeamMember[];
-  waypoints: Waypoint[];
-  status: 'active' | 'inactive' | 'completed';
-  startTime?: string;
-  estimatedEndTime?: string;
-}
 
 interface TeamDetailProps {
   team: Team;
@@ -77,7 +50,8 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
 
   const getRouteCoordinates = (): [number, number][] => {
     return team.waypoints
-      .sort((a, b) => a.order - b.order)
+      .filter(wp => wp.order !== undefined)
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map(wp => [wp.lat, wp.lng] as [number, number]);
   };
 
@@ -111,7 +85,7 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     }
   };
 
-  const completedWaypoints = team.waypoints.filter(wp => wp.completed).length;
+  const completedWaypoints = team.waypoints.filter(wp => wp.completed === true).length;
   const totalWaypoints = team.waypoints.length;
   const progressPercentage = totalWaypoints > 0 ? (completedWaypoints / totalWaypoints) * 100 : 0;
 
@@ -164,9 +138,9 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
 
           {/* Liste des membres */}
           <div className="team-members">
-            <h3>Membres de l'équipe ({team.members.length})</h3>
+            <h3>Membres de l'équipe ({team.members?.length || 0})</h3>
             <div className="members-list">
-              {team.members.map(member => (
+              {team.members?.map(member => (
                 <div key={member.id} className="member-item">
                   <div className="member-info">
                     <span className="member-icon">{getRoleIcon(member.role)}</span>
@@ -226,7 +200,8 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                   
                   {/* Marqueurs des waypoints */}
                   {team.waypoints
-                    .sort((a, b) => a.order - b.order)
+                    .filter(wp => wp.order !== undefined)
+                    .sort((a, b) => (a.order || 0) - (b.order || 0))
                     .map((waypoint) => (
                     <Marker
                       key={waypoint.id}
@@ -255,7 +230,8 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                 <h4>Détail de l'itinéraire</h4>
                 <div className="waypoints-timeline">
                   {team.waypoints
-                    .sort((a, b) => a.order - b.order)
+                    .filter(wp => wp.order !== undefined)
+                    .sort((a, b) => (a.order || 0) - (b.order || 0))
                     .map((waypoint) => (
                     <div key={waypoint.id} className={`timeline-item ${waypoint.completed ? 'completed' : 'pending'}`}>
                       <div className="timeline-marker" style={{ backgroundColor: team.color }}>

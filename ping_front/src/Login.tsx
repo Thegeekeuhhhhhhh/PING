@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from './useAuth'
 import snowPlow from './assets/snowplow_image.png'
 import './Login.css'
 
@@ -22,8 +22,8 @@ var doggyStyle = {
 };
 
 function Login() {
-  const navigate = useNavigate();
-  
+    const { loginWithToken } = useAuth()
+    
     //LOGIN PART
   const [text_login, setTextLogin] = useState('');
   const [text_pwd, setTextPWD] = useState('');
@@ -46,14 +46,13 @@ function Login() {
     };
     var a = await fetch("http://localhost:8080/api/user/login", requestOptions)
     if (a.ok) {
-      // Navigate to dashboard on successful login
-      navigate('/dashboard');
+      var res = await a.json()
+      loginWithToken(res.token); // Use the hook method
     }
     else {
       alert("nononon");
     }
   };
-  
   const register = async () => {
     const requestOptions = {
         method: 'POST',
