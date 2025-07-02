@@ -56,7 +56,7 @@ public class DangerResource {
 
         List<DangerResponse> res = new ArrayList<DangerResponse>();
         for (DangerModel d : dangerService.getDangers()) {
-            res.add(new DangerResponse(d.place, d.number, d.type, d.description));
+            res.add(new DangerResponse(d.id, d.number + " " + d.place, d.type, d.description));
         }
 
         Logger.logRequest(jwt.getSubject(), "/api/dangers/", "GEt " + "all ok !!!");
@@ -71,7 +71,7 @@ public class DangerResource {
         Logger.logRequest(jwt.getSubject(), "/api/dangers/{id}", "GET");
 
         DangerModel d = dangerService.getDanger(id);
-        DangerResponse res = new DangerResponse(d.place, d.number, d.type, d.description);
+        DangerResponse res = new DangerResponse(d.id, d.number + " " + d.place, d.type, d.description);
 
         Logger.logRequest(jwt.getSubject(), "/api/dangers/{id}", "GEt " + "all ok !!!");
         return Response.ok(res).status(200).build();
@@ -86,7 +86,7 @@ public class DangerResource {
                         + createDangerRequest.type + "\nDescription: " + createDangerRequest.description);
         DangerModel d = dangerService.addDanger(createDangerRequest.place, createDangerRequest.number,
                 createDangerRequest.type, createDangerRequest.description);
-        DangerResponse res = new DangerResponse(d.place, d.number, d.type, d.description);
+        DangerResponse res = new DangerResponse(d.id, d.number + " " + d.place, d.type, d.description);
         return Response.ok(res).status(200).build();
     }
 

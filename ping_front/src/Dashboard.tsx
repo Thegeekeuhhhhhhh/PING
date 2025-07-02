@@ -5,7 +5,7 @@ import SignalDanger from './Signal';
 import Danger from './Danger';
 import AddTeam from './AddTeam';
 import TeamDetail from './TeamDetail'
-import type { Team } from './types'
+import { type Progress, type Team } from './types'
 
 function Dashboard() {
   const { logout } = useAuth()
@@ -17,7 +17,8 @@ function Dashboard() {
     logout()
   }
 
-  const [teams, setTeams] = useState<Team[]>([
+  const [teams, setTeams] = useState<Team[]>([]);
+  /*
     { 
       id: 1, 
       name: 'Equipe 1', 
@@ -88,6 +89,7 @@ function Dashboard() {
       ]
     }
   ]);
+  */
 
   const [agenda, setAgenda] = useState({
     'Lundi': [
@@ -114,17 +116,21 @@ function Dashboard() {
     'Dimanche': []
   });
 
-  const [progress, setProgress] = useState([
+  const [progress, setProgress] = useState<Progress[]>([]);
+  /*
     { teamId: 1, percentage: 87, remainingTime: 'Temps restant estimé :' },
     { teamId: 2, percentage: 63, remainingTime: 'Temps restant estimé :' },
     { teamId: 3, percentage: 50, remainingTime: 'Temps restant estimé :' },
     { teamId: 4, percentage: 25, remainingTime: 'Temps restant estimé :' }
   ]);
+  */
 
-  const [dangers, setDangers] = useState([
+  const [dangers, setDangers] = useState([]);
+  /*
     { id: 1, type: 'Stationnement', location: '994 Rue Rachel Est' },
     { id: 2, type: 'Débris', location: '994 Rue Zoe North' }
   ]);
+  */
 
   const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
@@ -194,6 +200,51 @@ function Dashboard() {
         method: "POST",
         body: JSON.stringify({login: "sophie.l", name: "Sophie Laval", role: "observateur", status: "break"})
     });
+    const p4x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "julie.l", name: "Julie Lavoie", role: "chef", status: "inactive"})
+    });
+    const p5x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "marc.t", name: "Marc Tremblay", role: "membre", status: "inactive"})
+    });
+    const p6x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "alex.d", name: "Alex Dupont", role: "chef", status: "active"})
+    });
+    const p7x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "jean.c", name: "Jean Côté", role: "membre", status: "active"})
+    });
+    const p8x = await fetch("http://localhost:8080/api/members",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({login: "catherine.r", name: "Catherine Roy", role: "secours", status: "active"})
+    });
     
     const w1x = await fetch("http://localhost:8080/api/waypoints",
     {
@@ -231,6 +282,34 @@ function Dashboard() {
         method: "POST",
         body: JSON.stringify({ name: 'Mile End', lat: 45.5230, lng: -73.6020, order: 4, completed: false })
     });
+    const w5x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Outremont', lat: 45.5200, lng: -73.6050, order: 1, completed: true })
+
+    });
+    const w6x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Mont-Royal', lat: 45.5074, lng: -73.5878, order: 2, completed: false })
+    });
+    const w7x = await fetch("http://localhost:8080/api/waypoints",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'Rosemont', lat: 45.5370, lng: -73.5820, order: 3, completed: false })
+    });
 
     const d1x = await fetch("http://localhost:8080/api/dangers",
     {
@@ -241,7 +320,6 @@ function Dashboard() {
         method: "POST",
         body: JSON.stringify({ place: "Rue Rachel Est", number: 994, type: "Stationnement", description: "La voiture de Noah est garée au milieu de la route." })
     });
-
     const d2x = await fetch("http://localhost:8080/api/dangers",
     {
         headers: {
@@ -251,16 +329,24 @@ function Dashboard() {
         method: "POST",
         body: JSON.stringify({ place: "Rue Zoe North", number: 12, type: "Débris", description: "Tronc d'arbre sur la voie." })
     });
-
+    
     const p1 = await p1x.json();
     const p2 = await p2x.json();
     const p3 = await p3x.json();
+    const p4 = await p4x.json();
+    const p5 = await p5x.json();
+    const p6 = await p6x.json();
+    const p7 = await p7x.json();
+    const p8 = await p8x.json();
     const w1 = await w1x.json();
     const w2 = await w2x.json();
     const w3 = await w3x.json();
     const w4 = await w4x.json();
-  
-    await fetch("http://localhost:8080/api/teams",
+    const w5 = await w5x.json();
+    const w6 = await w6x.json();
+    const w7 = await w7x.json();
+
+    const t1x = await fetch("http://localhost:8080/api/teams",
     {
         headers: {
           'accept': 'application/json',
@@ -276,12 +362,56 @@ function Dashboard() {
           ],
       })
     });
-    
-    const test = await fetch("http://localhost:8080/api/dangers");
-    console.log(test);
-    const lolilol = await test.json();
-    console.log(lolilol);
-    setDangers(lolilol);
+    const t2x = await fetch("http://localhost:8080/api/teams",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'LA MEILLEURE EQUIPE', color: '#ffff44', status: 'inactive',
+          lm: [
+          p4["id"], p5["id"]
+        ],
+          lw: [
+          ],
+      })
+    });
+    const t3x = await fetch("http://localhost:8080/api/teams",
+    {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ name: 'LES RATONS DENEIGEURS', color: '#44ff44', status: 'active',
+          lm: [
+          p6["id"], p7["id"], p8["id"]
+        ],
+          lw: [
+            w5["id"], w6["id"], w7["id"]
+          ],
+      })
+    });
+  
+    const dangersx = await fetch("http://localhost:8080/api/dangers");
+    const dangersok = await dangersx.json();
+    setDangers(dangersok);
+
+    const teamsx = await fetch("http://localhost:8080/api/teams");
+    const teamsok = await teamsx.json();
+    setTeams(teamsok);
+
+    let p = [];
+    for (const t of teamsok) {
+      p.push({
+        id: t["id"],
+        percentage: Math.floor(Math.random() * 101),
+        remainingTime: 'Temps restant estimé :'
+      })
+      console.log(t);
+    }
+    setProgress(p);
   }
 
 
@@ -387,9 +517,9 @@ function Dashboard() {
               </div>
               <div className="progress-list">
                 {progress.map(item => {
-                  const team = getTeamById(item.teamId);
+                  const team = getTeamById(item.id);
                   return (
-                    <div key={item.teamId} className="progress-item">
+                    <div key={item.id} className="progress-item">
                       <div className="progress-info">
                         <span className="progress-percentage">{item.percentage}%</span>
                         <div className="progress-bar">

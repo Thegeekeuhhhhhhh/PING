@@ -38,6 +38,12 @@ export interface Team {
   members?: Member[];
 }
 
+export interface Progress {
+  id?: number;
+  percentage: number;
+  remainingTime: string;
+}
+
 export interface Danger {
   id: number;
   title?: string;
