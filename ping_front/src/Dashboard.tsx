@@ -47,80 +47,6 @@ function Dashboard() {
 
   const [teams, setTeams] = useState<Team[]>([]);
 
-
-  /*
-    { 
-      id: 1, 
-      name: 'Equipe 1', 
-      color: '#ff4444', 
-      active: true,
-      status: 'active',
-      startTime: '08:00',
-      estimatedEndTime: '16:00',
-      members: [
-        { id: 1, name: 'Marie Dubois', login: 'marie.d', role: 'chef', status: 'active' },
-        { id: 2, name: 'Pierre Martin', login: 'pierre.m', role: 'membre', status: 'active' },
-        { id: 3, name: 'Sophie Laval', login: 'sophie.l', role: 'observateur', status: 'break' }
-      ],
-      waypoints: [
-        { id: 1, name: 'Vieux-Montréal', lat: 45.5048, lng: -73.5536, order: 1, completed: true },
-        { id: 2, name: 'Centre-ville', lat: 45.5019, lng: -73.5674, order: 2, completed: true },
-        { id: 3, name: 'Plateau Mont-Royal', lat: 45.5200, lng: -73.5806, order: 3, completed: false },
-        { id: 4, name: 'Mile End', lat: 45.5230, lng: -73.6020, order: 4, completed: false }
-      ]
-    },
-    { 
-      id: 2, 
-      name: 'Equipe 2', 
-      color: '#ffff44', 
-      active: false,
-      status: 'inactive',
-      members: [
-        { id: 4, name: 'Julie Lavoie', login: 'julie.l', role: 'chef', status: 'inactive' },
-        { id: 5, name: 'Marc Tremblay', login: 'marc.t', role: 'membre', status: 'inactive' }
-      ],
-      waypoints: []
-    },
-    { 
-      id: 3, 
-      name: 'Equipe 3', 
-      color: '#44ff44', 
-      active: true,
-      status: 'active',
-      startTime: '09:00',
-      estimatedEndTime: '17:00',
-      members: [
-        { id: 6, name: 'Alex Dupont', login: 'alex.d', role: 'chef', status: 'active' },
-        { id: 7, name: 'Catherine Roy', login: 'cat.r', role: 'membre', status: 'active' },
-        { id: 8, name: 'Jean Côté', login: 'jean.c', role: 'secours', status: 'active' }
-      ],
-      waypoints: [
-        { id: 5, name: 'Outremont', lat: 45.5200, lng: -73.6050, order: 1, completed: true },
-        { id: 6, name: 'Mont-Royal', lat: 45.5074, lng: -73.5878, order: 2, completed: false },
-        { id: 7, name: 'Rosemont', lat: 45.5370, lng: -73.5820, order: 3, completed: false }
-      ]
-    },
-    { 
-      id: 4, 
-      name: 'Equipe 4', 
-      color: '#4444ff', 
-      active: true,
-      status: 'completed',
-      startTime: '06:00',
-      estimatedEndTime: '14:00',
-      members: [
-        { id: 9, name: 'Robert Gagnon', login: 'rob.g', role: 'chef', status: 'inactive' },
-        { id: 10, name: 'Lisa Bergeron', login: 'lisa.b', role: 'membre', status: 'inactive' }
-      ],
-      waypoints: [
-        { id: 8, name: 'Lachine', lat: 45.4370, lng: -73.6700, order: 1, completed: true },
-        { id: 9, name: 'Verdun', lat: 45.4580, lng: -73.5680, order: 2, completed: true },
-        { id: 10, name: 'Griffintown', lat: 45.4930, lng: -73.5590, order: 3, completed: true }
-      ]
-    }
-  ]);
-  */
-
   let ag: { [days in "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche"]: { team: string, timeSlot: string, color: string }[] } = {
       "Lundi": [],
       "Mardi": [],
@@ -131,9 +57,23 @@ function Dashboard() {
       "Dimanche": [],
     };
 
-  const [agenda, setAgenda] = useState(ag);
-  
+  const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
+  for (const t of teams) {
+    const epoch = Math.floor(Math.random() * 4 + 1);
+    for (let i = 0; i < epoch; i++) {     
+      const start = Math.floor(Math.random() * 5 + 7);
+      const color = t["color"];
+      const end = Math.floor(Math.random() * 13 + 7);
+      const temp = days[Math.floor(Math.random() * 7)] as "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche";
+      ag[temp].push({
+        team: t["id"] ? t["id"].toString() : "None", timeSlot: `${start}h - ${end}h`, color: color
+      });
+    }
+  }
+
+  
+  const [agenda, setAgenda] = useState(ag);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [dangers, setDangers] = useState([]);
 
@@ -148,7 +88,6 @@ function Dashboard() {
   };
 
   const addDanger = (d: any) => {
-    d["id"] = dangers.length;
     setDangers(e => [...e, d]);
   };
 
@@ -437,6 +376,8 @@ function Dashboard() {
     const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
     for (const t of teams) {
+      console.log(t);
+      
       const epoch = Math.floor(Math.random() * 4 + 1);
       for (let i = 0; i < epoch; i++) {     
         const start = Math.floor(Math.random() * 5 + 7);
@@ -530,7 +471,7 @@ function Dashboard() {
                   <div key={day} className="day-column">
                     <div className="day-header">{day}</div>
                     <div className="day-content">
-                      {agenda[day].map((slot, index) => (
+                      {ag[day].map((slot, index) => (
                         <div 
                           key={index} 
                           className="time-slot"
@@ -679,7 +620,7 @@ function Dashboard() {
           >
             ← Retour au Dashboard
           </button>
-          <Danger />
+          <Danger obj={selectedDanger}/>
         </div>
       )}
     </div>

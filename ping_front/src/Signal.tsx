@@ -48,8 +48,20 @@ function SignalDanger({fun}) {
     const id = res["id"];
     const type = res["type"];
 
+    const date = new Date();
+
+    const formatter = new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    const d = formatter.format(date);
+
     fun({
-        location: loc, type: type, description: desc
+        location: loc, type: type, description: desc, id: id, date: d
     });
 
     alert(`Danger signalé !\n\nLieu: ${loc}\nID: ${id}\nType: ${type}\nDescription: ${desc}`);

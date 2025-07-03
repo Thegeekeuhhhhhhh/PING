@@ -1,7 +1,7 @@
 import React from 'react';
 import './Danger.css';
 
-const Danger: React.FC = () => {
+const Danger: React.FC = ({obj}) => {
   return (
     <div className="danger-container">
       <h1 className="danger-title">Danger</h1>
@@ -10,7 +10,7 @@ const Danger: React.FC = () => {
         <div className="danger-section">
           <h2 className="section-title">ID</h2>
           <div className="section-content">
-            <p>D-001-2025</p>
+            <p>{obj["id"]}</p>
           </div>
         </div>
 
@@ -18,9 +18,7 @@ const Danger: React.FC = () => {
           <h2 className="section-title">Types</h2>
           <div className="section-content">
             <ul>
-              <li>Incendie</li>
-              <li>Fuite de gaz</li>
-              <li>Accident de circulation</li>
+              <li>{obj["type"]}</li>
             </ul>
           </div>
         </div>
@@ -28,7 +26,7 @@ const Danger: React.FC = () => {
         <div className="danger-section">
           <h2 className="section-title">Date</h2>
           <div className="section-content">
-            <p>28 juin 2025, 14:30</p>
+            <p>{obj["date"]}</p>
           </div>
         </div>
 
@@ -52,9 +50,7 @@ const Danger: React.FC = () => {
         <div className="danger-section">
           <h2 className="section-title">Détails</h2>
           <div className="section-content">
-            <p>Alerte de niveau critique détectée dans la zone industrielle.</p>
-            <p>Évacuation en cours. Les services d'urgence ont été contactés.</p>
-            <p>Périmètre de sécurité établi dans un rayon de 500 mètres.</p>
+            <p>{obj["description"]}</p>
           </div>
         </div>
       </div>
