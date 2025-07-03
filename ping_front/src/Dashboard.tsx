@@ -121,30 +121,18 @@ function Dashboard() {
   ]);
   */
 
-  const [agenda, setAgenda] = useState({
-    'Lundi': [
-      { team: 1, timeSlot: '6h - 12h', color: '#ff4444' },
-      { team: 4, timeSlot: '10h - 14h', color: '#4444ff' }
-    ],
-    'Mardi': [
-      { team: 3, timeSlot: '6h - 12h', color: '#44ff44' },
-      { team: 3, timeSlot: '10h - 14h', color: '#44ff44' }
-    ],
-    'Mercredi': [
-      { team: 3, timeSlot: '6h - 12h', color: '#44ff44' }
-    ],
-    'Jeudi': [
-      { team: 1, timeSlot: '8h - 12h', color: '#ff4444' }
-    ],
-    'Vendredi': [
-      { team: 1, timeSlot: '8h - 12h', color: '#ff4444' },
-      { team: 4, timeSlot: '10h - 14h', color: '#4444ff' }
-    ],
-    'Samedi': [
-      { team: 4, timeSlot: '10h - 14h', color: '#4444ff' }
-    ],
-    'Dimanche': []
-  });
+  let ag: { [days in "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche"]: { team: string, timeSlot: string, color: string }[] } = {
+      "Lundi": [],
+      "Mardi": [],
+      "Mercredi": [],
+      "Jeudi": [],
+      "Vendredi": [],
+      "Samedi": [],
+      "Dimanche": [],
+    };
+
+  const [agenda, setAgenda] = useState(ag);
+  
 
   const [progress, setProgress] = useState<Progress[]>([]);
   const [dangers, setDangers] = useState([]);
@@ -382,7 +370,7 @@ function Dashboard() {
           p1["id"], p2["id"], p3["id"]
         ],
           lw: [
-            w1["id"], w2["id"], w3["id"], w4["id"]
+            w1, w2, w3, w4
           ],
       })
     });
@@ -413,7 +401,7 @@ function Dashboard() {
           p6["id"], p7["id"], p8["id"]
         ],
           lw: [
-            w5["id"], w6["id"], w7["id"]
+            w5, w6, w7
           ],
       })
     });
@@ -435,6 +423,33 @@ function Dashboard() {
       })
     }
     setProgress(p);
+
+    let ag: { [days in "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche"]: { team: string, timeSlot: string, color: string }[] } = {
+      "Lundi": [],
+      "Mardi": [],
+      "Mercredi": [],
+      "Jeudi": [],
+      "Vendredi": [],
+      "Samedi": [],
+      "Dimanche": [],
+    };
+
+    const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+
+    for (const t of teams) {
+      const epoch = Math.floor(Math.random() * 4 + 1);
+      for (let i = 0; i < epoch; i++) {     
+        const start = Math.floor(Math.random() * 5 + 7);
+        const color = t["color"];
+        const end = Math.floor(Math.random() * 13 + 7);
+        const temp = days[Math.floor(Math.random() * 7)] as "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche";
+        ag[temp].push({
+          team: t["id"] ? t["id"].toString() : "None", timeSlot: `${start}h - ${end}h`, color: color
+        });
+      }
+    }
+    
+    setAgenda(ag);
   }
 
 
@@ -471,7 +486,7 @@ function Dashboard() {
             {/* Liste des lignes */}
             <div className="section teams-section">
               <div className="section-header">
-                <h2>Liste des lignes</h2>
+                <h2>Equipes</h2>
               </div>
               <div className="teams-list">
                 {teams.map(team => (

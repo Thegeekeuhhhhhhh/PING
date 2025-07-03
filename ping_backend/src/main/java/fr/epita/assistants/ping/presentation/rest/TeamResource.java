@@ -111,7 +111,9 @@ public class TeamResource {
         if (a == null) {
             return Response.ok().status(404).build();
         }
-        AddMemberResponse res = new AddMemberResponse(a.name,a.login,a.role,a.status,a.id);
+        Logger.logRequest(jwt.getSubject(), "/api/teams/",
+                "POST\n" + "Login: " + login.login + "\n" + "Name: " + login.name);
+        AddMemberResponse res = new AddMemberResponse(a.name, a.login, a.role, a.status, a.id);
         return Response.ok(res).status(200).build();
     }
 
@@ -126,9 +128,6 @@ public class TeamResource {
         Logger.logRequest(jwt.getSubject(), "/api/teams/",
                 "POST\n" + createTeamRequest.name + "\n" + createTeamRequest.color + "\n" + createTeamRequest.status
                         + "\n" + mdr);
-        for (WaypointModel a : createTeamRequest.lw) {
-            System.err.println(a);
-        }
         TeamModel d = teamService.addTeam(createTeamRequest.name, createTeamRequest.color, createTeamRequest.status,
                 createTeamRequest.lm, createTeamRequest.lw);
 
