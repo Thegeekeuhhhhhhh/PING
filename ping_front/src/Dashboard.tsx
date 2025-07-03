@@ -404,6 +404,7 @@ function Dashboard() {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '20px',
+            color: '#000000',
             backgroundColor: '#f8f9fa',
             borderBottom: '1px solid #dee2e6'
           }}>
