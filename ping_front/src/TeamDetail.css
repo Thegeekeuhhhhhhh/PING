@@ -1,3 +1,28 @@
+.form-input-member {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #374151;
+  transition: all 0.3s ease;
+  flex: 1;
+  width: 80%;
+}
+
+.form-input-member:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  background: white;
+}
+
+.form-input-member::placeholder {
+  color: #9ca3af;
+}
+
+
+
 .team-detail-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

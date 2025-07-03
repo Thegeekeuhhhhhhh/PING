@@ -196,7 +196,7 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
                 placeholder="Entrez le login du membre"
-                className="form-input"
+                className="form-input-member"
               />
             <button className="add-team-btn" onClick={addMember}>
                   +
