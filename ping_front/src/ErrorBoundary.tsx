@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('Erreur dans l\'application:', error, errorInfo);
   }
 
   render() {
@@ -34,8 +34,8 @@ class ErrorBoundary extends React.Component<Props, State> {
           borderRadius: '8px',
           margin: '20px'
         }}>
-          <h2>Something went wrong.</h2>
-          <p>An error occurred while loading the application. Please refresh the page.</p>
+          <h2>Erreur de chargement</h2>
+          <p>Une erreur s'est produite. Veuillez recharger la page.</p>
           <button 
             onClick={() => window.location.reload()}
             style={{
@@ -48,7 +48,7 @@ class ErrorBoundary extends React.Component<Props, State> {
               marginTop: '10px'
             }}
           >
-            Refresh Page
+            Recharger
           </button>
         </div>
       );

@@ -60,19 +60,19 @@ function Login() {
   return (
     <>
     <div className='card'>
-      <h1 className="login-container">Login page</h1>
+      <h1 className="login-container">Connexion</h1>
       <div className = "auth-wrapper">
         {/*
         <div className="card login-card">
         */}
             <CustomInput 
-            placeholder="Enter Login"
+            placeholder="Nom d'utilisateur"
             value={text_login}
             onChange={(e) => setTextLogin(e.target.value)}
             />
 
             <CustomInput
-            placeholder="Enter Password"
+            placeholder="Mot de passe"
             value={text_pwd}
             onChange={(e) => setTextPWD(e.target.value)}
             />
@@ -92,31 +92,31 @@ function Login() {
         <div className= "card register-card">
         */}
             <CustomInput
-            placeholder="Enter Login"
+            placeholder="Identifiant"
             value={text_loginREgister}
             onChange={(e) => setTextLoginRegister(e.target.value)}
             />
 
             <CustomInput
-            placeholder="Enter Password"
+            placeholder="Mot de passe"
             value={text_pwdRegister}
             onChange={(e) => setTextPwdRegister(e.target.value)}
             />
 
             <CustomInput
-            placeholder="Confirm Password"
+            placeholder="Confirmer le mot de passe"
             value={text_confPWD}
             onChange={(e) => setTextConfPWD(e.target.value)}
             />
 
             <CustomInput
-            placeholder="Email"
+            placeholder="Adresse email"
             value={text_email}
             onChange={(e) => setTextEmail(e.target.value)}
             />
 
             <CustomInput
-            placeholder="Confirm Email"
+            placeholder="Confirmer l'email"
             value={text_confEmail}
             onChange={(e) => setTextConfEmail(e.target.value)}
             />
