@@ -48,4 +48,10 @@ public class WaypointRepository implements PanacheRepository<WaypointModel> {
             delete(getWaypoint(id));
         }
     }
+
+    @Transactional
+    public WaypointModel save(WaypointModel a) {
+        persist(a);
+        return a;
+    }
 }

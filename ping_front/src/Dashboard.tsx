@@ -190,6 +190,7 @@ function Dashboard() {
     setTeams(teams.map(team => 
       team.id === teamId ? { ...team, active: !team.active } : team
     ));
+    
   };
 
   const getTeamById = (id: number) => teams.find(team => team.id === id);

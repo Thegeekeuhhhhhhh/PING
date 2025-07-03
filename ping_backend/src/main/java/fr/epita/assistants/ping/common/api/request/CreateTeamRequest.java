@@ -1,5 +1,8 @@
 package fr.epita.assistants.ping.common.api.request;
 
+
+import fr.epita.assistants.ping.data.model.WaypointModel;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -17,5 +20,5 @@ public class CreateTeamRequest {
     public String color;
     public String status;
     public List<UUID> lm;
-    public List<UUID> lw;
+    public List<WaypointModel> lw;
 }

@@ -139,7 +139,14 @@ const AddTeam: React.FC = ({fun}) => {
       color: teamColor,
       waypoints: allWaypoints
     });
-
+    const transformedWaypoints = allWaypoints.map((w) => ({
+    name: w.name,
+    lat: w.lat,
+    lng: w.lng,
+    order: 0,
+    completed: false,
+    }));
+    console.log(transformedWaypoints);
     const temp = await fetch("http://localhost:8080/api/teams",
     {
         headers: {
@@ -147,7 +154,7 @@ const AddTeam: React.FC = ({fun}) => {
           'Content-Type': 'application/json'
         },
         method: "POST",
-        body: JSON.stringify({name: teamName, color: teamColor, status: "active", lm: [], lw: []})
+        body: JSON.stringify({name: teamName, color: teamColor, status: "active", lm: [], lw: transformedWaypoints})
     });
 
     fun({

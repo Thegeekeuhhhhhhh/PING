@@ -45,16 +45,20 @@ public class TeamService {
         return teamRepository.getTeam(id);
     }
 
-    public TeamModel addTeam(String name, String color, String status, List<UUID> lm, List<UUID> lw) {
+    public TeamModel addTeam(String name, String color, String status, List<UUID> lm, List<WaypointModel> lw) {
         List<MemberModel> rm = new ArrayList<MemberModel>();
-        List<WaypointModel> rw = new ArrayList<WaypointModel>();
         for (UUID t : lm) {
             rm.add(memberService.getMember(t));
         }
-        for (UUID t : lw) {
-            rw.add(waypointRepository.getWaypoint(t));
+        List<WaypointModel> persistedWaypoints = new ArrayList<>();
+        for (WaypointModel waypoint : lw) {
+            if (waypoint.getId() == null) { 
+                persistedWaypoints.add(waypointRepository.save(waypoint));
+            } else {
+                persistedWaypoints.add(waypoint);
+            }
         }
-        return teamRepository.addTeam(name, color, status, rm, rw);
+        return teamRepository.addTeam(name, color, status, rm, lw);
         /*
          * for (UserModel temp : userRepository.listUsers()) {
          * if (temp.id.equals(owner.id)) {

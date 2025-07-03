@@ -123,13 +123,12 @@ public class TeamResource {
         for (UUID t : createTeamRequest.lm) {
             mdr += t.toString() + "\n";
         }
-        String lol = "";
-        for (UUID t : createTeamRequest.lw) {
-            lol += t.toString() + "\n";
-        }
         Logger.logRequest(jwt.getSubject(), "/api/teams/",
                 "POST\n" + createTeamRequest.name + "\n" + createTeamRequest.color + "\n" + createTeamRequest.status
                         + "\n" + mdr);
+        for (WaypointModel a : createTeamRequest.lw) {
+            System.err.println(a);
+        }
         TeamModel d = teamService.addTeam(createTeamRequest.name, createTeamRequest.color, createTeamRequest.status,
                 createTeamRequest.lm, createTeamRequest.lw);
 
