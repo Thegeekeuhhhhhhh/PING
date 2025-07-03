@@ -99,12 +99,8 @@ const TeamDetail: React.FC<TeamDetailProps> = ({ team, onBack }) => {
     var a = await fetch("http://localhost:8080/api/teams/addMember", requestOptions)
     if (a.ok) {
       var res = await a.json();
-      console.log(currentTeam);
+      currentTeam["lm"]?.push(res);
       
-      setCurrentTeam(prevTeam => ({
-          ...prevTeam,
-          members: [...(prevTeam["lm"] || []), res]
-        }));
       setLogin('');
     }
     else {

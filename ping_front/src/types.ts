@@ -30,12 +30,12 @@ export interface Team {
   id?: number;
   name: string;
   color: string;
-  waypoints: Waypoint[];
+  lw: Waypoint[];
   active?: boolean;
   status?: string;
   startTime?: string;
   estimatedEndTime?: string;
-  members?: Member[];
+  lm?: Member[];
 }
 
 export interface Progress {

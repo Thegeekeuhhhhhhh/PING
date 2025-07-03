@@ -139,6 +139,7 @@ const AddTeam: React.FC = ({fun}) => {
       color: teamColor,
       waypoints: allWaypoints
     });
+    
     const transformedWaypoints = allWaypoints.map((w) => ({
     name: w.name,
     lat: w.lat,
@@ -146,7 +147,7 @@ const AddTeam: React.FC = ({fun}) => {
     order: 0,
     completed: false,
     }));
-    console.log(transformedWaypoints);
+
     const temp = await fetch("http://localhost:8080/api/teams",
     {
         headers: {

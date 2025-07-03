@@ -26,7 +26,6 @@ function Dashboard() {
 
         const teamsx = await fetch("http://localhost:8080/api/teams");
         const teamsok = await teamsx.json();
-        console.log(teamsok);
         setTeams(teamsok);
 
         let p = [];
@@ -181,6 +180,7 @@ function Dashboard() {
   };
 
   const handleBackToDashboard = () => {
+    console.log(teams);
     setCurrentPage('dashboard');
     setSelectedDanger(null);
     setSelectedTeam(null);
@@ -433,7 +433,6 @@ function Dashboard() {
         percentage: Math.floor(Math.random() * 101),
         remainingTime: 'Temps restant estimé :'
       })
-      console.log(t);
     }
     setProgress(p);
   }
@@ -488,7 +487,7 @@ function Dashboard() {
                     <div className="team-info">
                       <span className="team-name">{team.name}</span>
                       <span className="team-members">
-                        {team["lm"].length || 0} membre{(team["lm"].length || 0) > 1 ? 's' : ''}
+                        {team["lm"] ? team["lm"].length || 0 : 0} membre{(team["lm"] ? team["lm"].length || 0 : 0) > 1 ? 's' : ''}
                       </span>
                     </div>
                     <div 
